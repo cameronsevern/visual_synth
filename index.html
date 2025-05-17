@@ -7,11 +7,25 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>Interactive Audio Visualizer</h1>
-    </header>
+    <div class="main-wrapper">
+        <header>
+            <h1>Interactive Audio Visualizer</h1>
+        </header>
 
-    <div class="container">
+        <main class="container">
+            <section class="visualizations">
+                <h2>Visualizations</h2>
+                <div>
+                    <h3>Waveform Display</h3>
+                    <canvas id="waveformCanvas" class="visualization-area"></canvas>
+                </div>
+                <div>
+                    <h3>Frequency Distribution (EQ)</h3>
+                    <canvas id="frequencyCanvas" class="visualization-area"></canvas>
+                </div>
+            </section>
+        </main>
+
         <section class="controls">
             <h2>Controls</h2>
             <div>
@@ -21,18 +35,6 @@
                     <option value="square">Square</option>
                     <option value="sawtooth">Sawtooth</option>
                 </select>
-            </div>
-        </section>
-
-        <section class="visualizations">
-            <h2>Visualizations</h2>
-            <div>
-                <h3>Waveform Display</h3>
-                <canvas id="waveformCanvas" class="visualization-area"></canvas>
-            </div>
-            <div>
-                <h3>Frequency Distribution (EQ)</h3>
-                <canvas id="frequencyCanvas" class="visualization-area"></canvas>
             </div>
         </section>
     </div>
