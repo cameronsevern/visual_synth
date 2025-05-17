@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Audio Visualizer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Interactive Audio Visualizer</h1>
+    </header>
+
+    <div class="container">
+        <section class="controls">
+            <h2>Controls</h2>
+            <div>
+                <label for="waveform">Select Waveform:</label>
+                <select id="waveform" name="waveform">
+                    <option value="sine">Sine</option>
+                    <option value="square">Square</option>
+                    <option value="sawtooth">Sawtooth</option>
+                </select>
+            </div>
+        </section>
+
+        <section class="visualizations">
+            <h2>Visualizations</h2>
+            <div>
+                <h3>Waveform Display</h3>
+                <canvas id="waveformCanvas" class="visualization-area"></canvas>
+            </div>
+            <div>
+                <h3>Frequency Distribution (EQ)</h3>
+                <canvas id="frequencyCanvas" class="visualization-area"></canvas>
+            </div>
+        </section>
+    </div>
+
+    <script src="synth.js"></script>
+    <script src="visualizer.js"></script>
+</body>
+</html>

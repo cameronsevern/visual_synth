@@ -1,0 +1,128 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    background-color: #1a1a1a; /* Dark background for emphasis on visualizations */
+    color: #e0e0e0; /* Light text for contrast */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+    width: 100%;
+}
+
+header h1 {
+    font-size: 2.5em;
+    color: #00bcd4; /* Accent color for the title */
+    font-weight: 300;
+    letter-spacing: 1px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px; /* Max width for larger screens */
+    gap: 30px;
+}
+
+.controls, .visualizations {
+    background-color: #2c2c2c; /* Slightly lighter dark shade for sections */
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    width: 100%;
+}
+
+.controls {
+    order: 2; /* Controls below visualizations on small screens, potentially */
+}
+
+.visualizations {
+    order: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.visualization-area {
+    border: none; /* Remove border for a cleaner look */
+    height: 250px; /* Increased height for better visibility */
+    margin-bottom: 0; /* Remove margin as gap is handled by parent */
+    background-color: #111; /* Very dark background for canvas */
+    border-radius: 8px;
+    width: 100%; /* Ensure canvas takes full width of its container */
+}
+
+h2, h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #00bcd4; /* Accent color for headings */
+    font-weight: 400;
+    border-bottom: 1px solid #007a8a;
+    padding-bottom: 10px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: #b0b0b0; /* Lighter grey for labels */
+    font-size: 0.95em;
+}
+
+select {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background-color: #3a3a3a;
+    color: #e0e0e0;
+    font-size: 1em;
+    cursor: pointer;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+select:focus {
+    outline: none;
+    border-color: #00bcd4;
+    background-color: #4a4a4a;
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+    .container {
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: space-between;
+    }
+
+    .controls {
+        width: 30%;
+        order: 1; /* Controls on the left */
+        position: sticky; /* Make controls sticky on larger screens */
+        top: 20px;
+    }
+
+    .visualizations {
+        width: 67%;
+        order: 2; /* Visualizations on the right */
+    }
+}
+
+@media (min-width: 1024px) {
+    .visualization-area {
+        height: 300px; /* Even more height on larger screens */
+    }
+
+    header h1 {
+        font-size: 3em;
+    }
+}
