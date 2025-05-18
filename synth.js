@@ -8,6 +8,66 @@ let waveformType = 'sine'; // Default waveform
 // Connect analyser to destination to ensure it processes audio
 analyser.connect(audioContext.destination);
 
+// Helper to resume AudioContext
+function resumeAudioContextIfNeeded() {
+    if (audioContext && audioContext.state === 'suspended') {
+        audioContext.resume().then(() => {
+            // console.log('AudioContext resumed successfully');
+        }).catch(e => console.error('Error resuming AudioContext:', e));
+    }
+}
+
+function midiToFrequency(midi) {
+    return 440 * Math.pow(2, (midi - 69) / 12);
+}
+
+// New functions for MIDI note numbers
+function playNoteByMidi(midiNote) {
+    resumeAudioContextIfNeeded(); // Ensure audio context is active
+
+    // Check if this specific MIDI note is already in the map (e.g. from QWERTY or another source)
+    // For simplicity, we allow re-triggering by stopping the old one if it exists.
+    if (oscillatorMap.has(midiNote)) {
+        const oldOscillator = oscillatorMap.get(midiNote);
+        oldOscillator.stop(audioContext.currentTime);
+        oldOscillator.disconnect();
+        oscillatorMap.delete(midiNote);
+    }
+
+    const freq = midiToFrequency(midiNote);
+    if (isNaN(freq)) {
+        console.error(`Invalid MIDI note: ${midiNote} resulted in NaN frequency.`);
+        return;
+    }
+
+    const oscillator = audioContext.createOscillator();
+    oscillator.type = waveformType;
+    oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+
+    oscillator.connect(analyser);
+    oscillator.start();
+    oscillatorMap.set(midiNote, oscillator); // Use midiNote (number) as key
+    // console.log(`Playing MIDI: ${midiNote}, Freq: ${freq.toFixed(2)}, Wave: ${waveformType}`);
+}
+
+function stopNoteByMidi(midiNote) {
+    if (oscillatorMap.has(midiNote)) {
+        const oscillator = oscillatorMap.get(midiNote);
+        // Optional: Add a small ramp down to avoid clicks
+        // const now = audioContext.currentTime;
+        // if (oscillator.gain) { // If a gain node was used
+        //    oscillator.gain.setValueAtTime(oscillator.gain.value, now);
+        //    oscillator.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
+        //    oscillator.stop(now + 0.05);
+        // } else {
+        oscillator.stop(audioContext.currentTime); // Immediate stop
+        // }
+        oscillator.disconnect();
+        oscillatorMap.delete(midiNote);
+        // console.log(`Stopped MIDI: ${midiNote}`);
+    }
+}
+
 // Key to frequency mapping (A4 = 440 Hz)
 // Using a simple equal temperament scale for C4-B5 range
 const keyToFrequency = {
@@ -61,17 +121,17 @@ function stopNote(key) {
 }
 
 // Event listeners for keyboard
-document.addEventListener('keydown', (event) => {
-    // Prevent repeated notes if key is held down
-    if (event.repeat) return;
-    const key = event.key.toUpperCase();
-    playNote(key);
-});
-
-document.addEventListener('keyup', (event) => {
-    const key = event.key.toUpperCase();
-    stopNote(key);
-});
+// document.addEventListener('keydown', (event) => {
+//     // Prevent repeated notes if key is held down
+//     if (event.repeat) return;
+//     const key = event.key.toUpperCase();
+//     playNote(key);
+// });
+//
+// document.addEventListener('keyup', (event) => {
+//     const key = event.key.toUpperCase();
+//     stopNote(key);
+// });
 
 // Listen to waveform buttons
 const waveformButtons = document.querySelectorAll('.synth-button');

@@ -39,6 +39,35 @@
                 </div>
             </div>
         </section>
+
+        <section class="piano-container">
+            <h2>Piano</h2>
+            <div id="pianoRoll" class="piano-roll">
+                <!-- White keys -->
+                <div class="key white-key" data-note="C"></div>
+                <div class="key white-key" data-note="D"></div>
+                <div class="key white-key" data-note="E"></div>
+                <div class="key white-key" data-note="F"></div>
+                <div class="key white-key" data-note="G"></div>
+                <div class="key white-key" data-note="A"></div>
+                <div class="key white-key" data-note="B"></div>
+                <!-- Black keys -->
+                <div class="key black-key" data-note="C#" style="left: 35px;"></div>
+                <div class="key black-key" data-note="D#" style="left: 85px;"></div>
+                <div class="key black-key" data-note="F#" style="left: 185px;"></div>
+                <div class="key black-key" data-note="G#" style="left: 235px;"></div>
+                <div class="key black-key" data-note="A#" style="left: 285px;"></div>
+            </div>
+        </section>
+
+        <section class="octave-selector-container">
+            <h2>Octave</h2>
+            <div class="octave-selector">
+                <button id="octaveDown" class="octave-button">-</button>
+                <span id="currentOctave" class="current-octave-display">4</span>
+                <button id="octaveUp" class="octave-button">+</button>
+            </div>
+        </section>
     </div>
 
     <script src="synth.js"></script>
