@@ -43,20 +43,104 @@
         <section class="piano-container">
             <h2>Piano</h2>
             <div id="pianoRoll" class="piano-roll">
-                <!-- White keys -->
-                <div class="key white-key" data-note="C"></div>
-                <div class="key white-key" data-note="D"></div>
-                <div class="key white-key" data-note="E"></div>
-                <div class="key white-key" data-note="F"></div>
-                <div class="key white-key" data-note="G"></div>
-                <div class="key white-key" data-note="A"></div>
-                <div class="key white-key" data-note="B"></div>
-                <!-- Black keys -->
-                <div class="key black-key" data-note="C#" style="left: 35px;"></div>
-                <div class="key black-key" data-note="D#" style="left: 85px;"></div>
-                <div class="key black-key" data-note="F#" style="left: 185px;"></div>
-                <div class="key black-key" data-note="G#" style="left: 235px;"></div>
-                <div class="key black-key" data-note="A#" style="left: 285px;"></div>
+                <!-- Piano Keys: A0 to C8 -->
+                <!-- Octave 0 -->
+                <div class="key white-key" data-note="A" data-octave="0" id="note-A-octave-0"></div>
+                <div class="key black-key" data-note="A#" data-octave="0" id="note-A#-octave-0"></div>
+                <div class="key white-key" data-note="B" data-octave="0" id="note-B-octave-0"></div>
+                <!-- Octave 1 -->
+                <div class="key white-key" data-note="C" data-octave="1" id="note-C-octave-1"></div>
+                <div class="key black-key" data-note="C#" data-octave="1" id="note-C#-octave-1"></div>
+                <div class="key white-key" data-note="D" data-octave="1" id="note-D-octave-1"></div>
+                <div class="key black-key" data-note="D#" data-octave="1" id="note-D#-octave-1"></div>
+                <div class="key white-key" data-note="E" data-octave="1" id="note-E-octave-1"></div>
+                <div class="key white-key" data-note="F" data-octave="1" id="note-F-octave-1"></div>
+                <div class="key black-key" data-note="F#" data-octave="1" id="note-F#-octave-1"></div>
+                <div class="key white-key" data-note="G" data-octave="1" id="note-G-octave-1"></div>
+                <div class="key black-key" data-note="G#" data-octave="1" id="note-G#-octave-1"></div>
+                <div class="key white-key" data-note="A" data-octave="1" id="note-A-octave-1"></div>
+                <div class="key black-key" data-note="A#" data-octave="1" id="note-A#-octave-1"></div>
+                <div class="key white-key" data-note="B" data-octave="1" id="note-B-octave-1"></div>
+                <!-- Octave 2 -->
+                <div class="key white-key" data-note="C" data-octave="2" id="note-C-octave-2"></div>
+                <div class="key black-key" data-note="C#" data-octave="2" id="note-C#-octave-2"></div>
+                <div class="key white-key" data-note="D" data-octave="2" id="note-D-octave-2"></div>
+                <div class="key black-key" data-note="D#" data-octave="2" id="note-D#-octave-2"></div>
+                <div class="key white-key" data-note="E" data-octave="2" id="note-E-octave-2"></div>
+                <div class="key white-key" data-note="F" data-octave="2" id="note-F-octave-2"></div>
+                <div class="key black-key" data-note="F#" data-octave="2" id="note-F#-octave-2"></div>
+                <div class="key white-key" data-note="G" data-octave="2" id="note-G-octave-2"></div>
+                <div class="key black-key" data-note="G#" data-octave="2" id="note-G#-octave-2"></div>
+                <div class="key white-key" data-note="A" data-octave="2" id="note-A-octave-2"></div>
+                <div class="key black-key" data-note="A#" data-octave="2" id="note-A#-octave-2"></div>
+                <div class="key white-key" data-note="B" data-octave="2" id="note-B-octave-2"></div>
+                <!-- Octave 3 -->
+                <div class="key white-key" data-note="C" data-octave="3" id="note-C-octave-3"></div>
+                <div class="key black-key" data-note="C#" data-octave="3" id="note-C#-octave-3"></div>
+                <div class="key white-key" data-note="D" data-octave="3" id="note-D-octave-3"></div>
+                <div class="key black-key" data-note="D#" data-octave="3" id="note-D#-octave-3"></div>
+                <div class="key white-key" data-note="E" data-octave="3" id="note-E-octave-3"></div>
+                <div class="key white-key" data-note="F" data-octave="3" id="note-F-octave-3"></div>
+                <div class="key black-key" data-note="F#" data-octave="3" id="note-F#-octave-3"></div>
+                <div class="key white-key" data-note="G" data-octave="3" id="note-G-octave-3"></div>
+                <div class="key black-key" data-note="G#" data-octave="3" id="note-G#-octave-3"></div>
+                <div class="key white-key" data-note="A" data-octave="3" id="note-A-octave-3"></div>
+                <div class="key black-key" data-note="A#" data-octave="3" id="note-A#-octave-3"></div>
+                <div class="key white-key" data-note="B" data-octave="3" id="note-B-octave-3"></div>
+                <!-- Octave 4 -->
+                <div class="key white-key" data-note="C" data-octave="4" id="note-C-octave-4"></div>
+                <div class="key black-key" data-note="C#" data-octave="4" id="note-C#-octave-4"></div>
+                <div class="key white-key" data-note="D" data-octave="4" id="note-D-octave-4"></div>
+                <div class="key black-key" data-note="D#" data-octave="4" id="note-D#-octave-4"></div>
+                <div class="key white-key" data-note="E" data-octave="4" id="note-E-octave-4"></div>
+                <div class="key white-key" data-note="F" data-octave="4" id="note-F-octave-4"></div>
+                <div class="key black-key" data-note="F#" data-octave="4" id="note-F#-octave-4"></div>
+                <div class="key white-key" data-note="G" data-octave="4" id="note-G-octave-4"></div>
+                <div class="key black-key" data-note="G#" data-octave="4" id="note-G#-octave-4"></div>
+                <div class="key white-key" data-note="A" data-octave="4" id="note-A-octave-4"></div>
+                <div class="key black-key" data-note="A#" data-octave="4" id="note-A#-octave-4"></div>
+                <div class="key white-key" data-note="B" data-octave="4" id="note-B-octave-4"></div>
+                <!-- Octave 5 -->
+                <div class="key white-key" data-note="C" data-octave="5" id="note-C-octave-5"></div>
+                <div class="key black-key" data-note="C#" data-octave="5" id="note-C#-octave-5"></div>
+                <div class="key white-key" data-note="D" data-octave="5" id="note-D-octave-5"></div>
+                <div class="key black-key" data-note="D#" data-octave="5" id="note-D#-octave-5"></div>
+                <div class="key white-key" data-note="E" data-octave="5" id="note-E-octave-5"></div>
+                <div class="key white-key" data-note="F" data-octave="5" id="note-F-octave-5"></div>
+                <div class="key black-key" data-note="F#" data-octave="5" id="note-F#-octave-5"></div>
+                <div class="key white-key" data-note="G" data-octave="5" id="note-G-octave-5"></div>
+                <div class="key black-key" data-note="G#" data-octave="5" id="note-G#-octave-5"></div>
+                <div class="key white-key" data-note="A" data-octave="5" id="note-A-octave-5"></div>
+                <div class="key black-key" data-note="A#" data-octave="5" id="note-A#-octave-5"></div>
+                <div class="key white-key" data-note="B" data-octave="5" id="note-B-octave-5"></div>
+                <!-- Octave 6 -->
+                <div class="key white-key" data-note="C" data-octave="6" id="note-C-octave-6"></div>
+                <div class="key black-key" data-note="C#" data-octave="6" id="note-C#-octave-6"></div>
+                <div class="key white-key" data-note="D" data-octave="6" id="note-D-octave-6"></div>
+                <div class="key black-key" data-note="D#" data-octave="6" id="note-D#-octave-6"></div>
+                <div class="key white-key" data-note="E" data-octave="6" id="note-E-octave-6"></div>
+                <div class="key white-key" data-note="F" data-octave="6" id="note-F-octave-6"></div>
+                <div class="key black-key" data-note="F#" data-octave="6" id="note-F#-octave-6"></div>
+                <div class="key white-key" data-note="G" data-octave="6" id="note-G-octave-6"></div>
+                <div class="key black-key" data-note="G#" data-octave="6" id="note-G#-octave-6"></div>
+                <div class="key white-key" data-note="A" data-octave="6" id="note-A-octave-6"></div>
+                <div class="key black-key" data-note="A#" data-octave="6" id="note-A#-octave-6"></div>
+                <div class="key white-key" data-note="B" data-octave="6" id="note-B-octave-6"></div>
+                <!-- Octave 7 -->
+                <div class="key white-key" data-note="C" data-octave="7" id="note-C-octave-7"></div>
+                <div class="key black-key" data-note="C#" data-octave="7" id="note-C#-octave-7"></div>
+                <div class="key white-key" data-note="D" data-octave="7" id="note-D-octave-7"></div>
+                <div class="key black-key" data-note="D#" data-octave="7" id="note-D#-octave-7"></div>
+                <div class="key white-key" data-note="E" data-octave="7" id="note-E-octave-7"></div>
+                <div class="key white-key" data-note="F" data-octave="7" id="note-F-octave-7"></div>
+                <div class="key black-key" data-note="F#" data-octave="7" id="note-F#-octave-7"></div>
+                <div class="key white-key" data-note="G" data-octave="7" id="note-G-octave-7"></div>
+                <div class="key black-key" data-note="G#" data-octave="7" id="note-G#-octave-7"></div>
+                <div class="key white-key" data-note="A" data-octave="7" id="note-A-octave-7"></div>
+                <div class="key black-key" data-note="A#" data-octave="7" id="note-A#-octave-7"></div>
+                <div class="key white-key" data-note="B" data-octave="7" id="note-B-octave-7"></div>
+                <!-- Octave 8 -->
+                <div class="key white-key" data-note="C" data-octave="8" id="note-C-octave-8"></div>
             </div>
         </section>
 

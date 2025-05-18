@@ -264,6 +264,9 @@ label {
     background-color: #181820;
     border-radius: 10px 10px 0 0;
     box-shadow: 0 -6px 20px rgba(0, 160, 192, 0.15);
+    overflow-x: auto; /* Enable horizontal scrolling */
+    padding-left: 15px; /* Add some padding for scroll ends */
+    padding-right: 15px;
 }
 
 .piano-container h2 {
@@ -280,15 +283,15 @@ label {
 
 .piano-roll {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start; /* Align keys to the start for scrolling */
     position: relative; /* For positioning black keys */
     height: 150px; /* Adjust as needed */
     background-color: #101015;
     padding: 10px;
     border-radius: 8px;
     box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
-    width: fit-content;
-    margin: 0 auto;
+    width: fit-content; /* Allow it to be as wide as all keys */
+    /* margin: 0 auto; Removed to allow flex-start to take effect with scrolling */
 }
 
 .key {
@@ -334,6 +337,52 @@ label {
     font-size: 0.7em;
     border-radius: 0 0 3px 3px;
 }
+
+/* Specific Black Key Positions (based on 50px white key width) */
+/* Octave 0 */
+[id="note-A#-octave-0"] { left: 35px; }
+/* Octave 1 */
+[id="note-C#-octave-1"] { left: 135px; }
+[id="note-D#-octave-1"] { left: 185px; }
+[id="note-F#-octave-1"] { left: 285px; }
+[id="note-G#-octave-1"] { left: 335px; }
+[id="note-A#-octave-1"] { left: 385px; }
+/* Octave 2 */
+[id="note-C#-octave-2"] { left: 485px; }
+[id="note-D#-octave-2"] { left: 535px; }
+[id="note-F#-octave-2"] { left: 635px; }
+[id="note-G#-octave-2"] { left: 685px; }
+[id="note-A#-octave-2"] { left: 735px; }
+/* Octave 3 */
+[id="note-C#-octave-3"] { left: 835px; }
+[id="note-D#-octave-3"] { left: 885px; }
+[id="note-F#-octave-3"] { left: 985px; }
+[id="note-G#-octave-3"] { left: 1035px; }
+[id="note-A#-octave-3"] { left: 1085px; }
+/* Octave 4 */
+[id="note-C#-octave-4"] { left: 1185px; }
+[id="note-D#-octave-4"] { left: 1235px; }
+[id="note-F#-octave-4"] { left: 1335px; }
+[id="note-G#-octave-4"] { left: 1385px; }
+[id="note-A#-octave-4"] { left: 1435px; }
+/* Octave 5 */
+[id="note-C#-octave-5"] { left: 1535px; }
+[id="note-D#-octave-5"] { left: 1585px; }
+[id="note-F#-octave-5"] { left: 1685px; }
+[id="note-G#-octave-5"] { left: 1735px; }
+[id="note-A#-octave-5"] { left: 1785px; }
+/* Octave 6 */
+[id="note-C#-octave-6"] { left: 1885px; }
+[id="note-D#-octave-6"] { left: 1935px; }
+[id="note-F#-octave-6"] { left: 2035px; }
+[id="note-G#-octave-6"] { left: 2085px; }
+[id="note-A#-octave-6"] { left: 2135px; }
+/* Octave 7 */
+[id="note-C#-octave-7"] { left: 2235px; }
+[id="note-D#-octave-7"] { left: 2285px; }
+[id="note-F#-octave-7"] { left: 2385px; }
+[id="note-G#-octave-7"] { left: 2435px; }
+[id="note-A#-octave-7"] { left: 2485px; }
 
 /* Octave Selector Styles */
 .octave-selector-container {
@@ -436,11 +485,6 @@ label {
         font-size: 0.6em;
     }
     /* Adjust black key positions for smaller white keys */
-    .key.black-key[data-note="C#"] { left: 24.5px; } /* (35 * 0.7) approx */
-    .key.black-key[data-note="D#"] { left: 59.5px; } /* (35 * 1.7) approx */
-    .key.black-key[data-note="F#"] { left: 129.5px; }
-    .key.black-key[data-note="G#"] { left: 164.5px; }
-    .key.black-key[data-note="A#"] { left: 199.5px; }
 
 
     .octave-selector {
@@ -469,9 +513,4 @@ label {
         width: 18px;
         height: 50%;
     }
-    .key.black-key[data-note="C#"] { left: 19.6px; }
-    .key.black-key[data-note="D#"] { left: 47.6px; }
-    .key.black-key[data-note="F#"] { left: 103.6px; }
-    .key.black-key[data-note="G#"] { left: 131.6px; }
-    .key.black-key[data-note="A#"] { left: 159.6px; }
 }

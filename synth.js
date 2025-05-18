@@ -4,6 +4,13 @@ analyser.fftSize = 2048; // Standard FFT size for detailed frequency analysis
 
 const oscillatorMap = new Map();
 let waveformType = 'sine'; // Default waveform
+let currentKeyboardOctaveOffset = 0; // In semitones (e.g., 0 for no shift, 12 for one octave up, -12 for one octave down)
+
+// Function to be called by UI controls (e.g., from visualizer.js) to set the keyboard's octave shift
+function setKeyboardOctaveOffset(offsetInOctaves) {
+    currentKeyboardOctaveOffset = offsetInOctaves * 12;
+    // console.log(`Synth: Keyboard octave offset set to ${offsetInOctaves} (${currentKeyboardOctaveOffset} semitones)`);
+}
 
 // Connect analyser to destination to ensure it processes audio
 analyser.connect(audioContext.destination);
@@ -19,6 +26,14 @@ function resumeAudioContextIfNeeded() {
 
 function midiToFrequency(midi) {
     return 440 * Math.pow(2, (midi - 69) / 12);
+}
+
+// Helper function to convert MIDI note to note name and octave
+const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+function midiToNoteNameAndOctave(midiNote) {
+    const noteIndex = midiNote % 12;
+    const octave = Math.floor(midiNote / 12) - 1; // MIDI note 0 is C-1, so C4 (MIDI 60) is octave 4
+    return { noteName: NOTE_NAMES[noteIndex], octave: octave };
 }
 
 // New functions for MIDI note numbers
@@ -48,6 +63,11 @@ function playNoteByMidi(midiNote) {
     oscillator.start();
     oscillatorMap.set(midiNote, oscillator); // Use midiNote (number) as key
     // console.log(`Playing MIDI: ${midiNote}, Freq: ${freq.toFixed(2)}, Wave: ${waveformType}`);
+
+    if (typeof visualizer !== 'undefined' && visualizer.highlightKeyboardNote) {
+        const { noteName, octave } = midiToNoteNameAndOctave(midiNote);
+        visualizer.highlightKeyboardNote(noteName, octave, true);
+    }
 }
 
 function stopNoteByMidi(midiNote) {
@@ -65,73 +85,81 @@ function stopNoteByMidi(midiNote) {
         oscillator.disconnect();
         oscillatorMap.delete(midiNote);
         // console.log(`Stopped MIDI: ${midiNote}`);
+
+        if (typeof visualizer !== 'undefined' && visualizer.highlightKeyboardNote) {
+            const { noteName, octave } = midiToNoteNameAndOctave(midiNote);
+            visualizer.highlightKeyboardNote(noteName, octave, false);
+        }
     }
 }
 
-// Key to frequency mapping (A4 = 440 Hz)
-// Using a simple equal temperament scale for C4-B5 range
-const keyToFrequency = {
-    // Bottom row
-    'A': 261.63, // C4
-    'S': 293.66, // D4
-    'D': 329.63, // E4
-    'F': 349.23, // F4
-    'G': 392.00, // G4
-    'H': 440.00, // A4
-    'J': 493.88, // B4
-    'K': 523.25, // C5
-    'L': 587.33, // D5
-    ';': 659.25, // E5
-    // Top row
-    'Q': 523.25, // C5 (Higher octave for QWERTY row)
-    'W': 554.37, // C#5/Db5 (approximation)
-    'E': 587.33, // D5
-    'R': 622.25, // D#5/Eb5 (approximation)
-    'T': 659.25, // E5
-    'Y': 698.46, // F5
-    'U': 739.99, // F#5/Gb5 (approximation)
-    'I': 783.99, // G5
-    'O': 830.61, // G#5/Ab5 (approximation)
-    'P': 880.00  // A5
+// Key to MIDI note mapping for three octaves
+// Octave 1: C3 (MIDI 48) to B3 (MIDI 59)
+// Octave 2: C4 (MIDI 60) to B4 (MIDI 71)
+// Octave 3: C5 (MIDI 72) to B5 (MIDI 83)
+// New keyboard mapping:
+// White keys: 'a' (C4) through '\''
+// Black keys: 'q' (C#4) through '['
+const keyToMidiNote = {
+    // White keys starting from C4 (MIDI 60)
+    'a': 60, // C4
+    's': 62, // D4
+    'd': 64, // E4
+    'f': 65, // F4
+    'g': 67, // G4
+    'h': 69, // A4
+    'j': 71, // B4
+    'k': 72, // C5
+    'l': 74, // D5
+
+    // Black keys - Updated Mapping
+    // 'q': 61, // C#4 - Unmapped or re-assign if needed for other purposes
+    'w': 61, // C#4
+    'e': 63, // D#4
+    't': 66, // F#4
+    'y': 68, // G#4
+    'u': 70, // A#4
+    'o': 73, // C#5
+    'p': 75, // D#5
 };
 
 function playNote(key) {
-    if (!keyToFrequency[key] || oscillatorMap.has(key)) {
-        return; // Key not mapped or already playing
+    resumeAudioContextIfNeeded();
+    const baseMidiNote = keyToMidiNote[key.toLowerCase()]; // Use toLowerCase for robustness against Shift key etc.
+    if (baseMidiNote !== undefined) {
+        const finalMidiNote = baseMidiNote + currentKeyboardOctaveOffset;
+        // Ensure the note is within the standard 88-key piano range (MIDI 21-108)
+        // This prevents errors if octave shift goes too far.
+        if (finalMidiNote >= 21 && finalMidiNote <= 108) {
+            playNoteByMidi(finalMidiNote);
+        } else {
+            // console.warn(`Keyboard note ${key} (Base MIDI: ${baseMidiNote}) with offset ${currentKeyboardOctaveOffset / 12} octaves results in MIDI ${finalMidiNote}, which is outside the 88-key range (21-108).`);
+        }
     }
-
-    const oscillator = audioContext.createOscillator();
-    oscillator.type = waveformType;
-    oscillator.frequency.setValueAtTime(keyToFrequency[key], audioContext.currentTime);
-
-    // Connect oscillator to analyser, then analyser is already connected to destination
-    oscillator.connect(analyser);
-
-    oscillator.start();
-    oscillatorMap.set(key, oscillator);
 }
 
 function stopNote(key) {
-    if (oscillatorMap.has(key)) {
-        const oscillator = oscillatorMap.get(key);
-        oscillator.stop(audioContext.currentTime);
-        oscillator.disconnect(); // Disconnect from analyser
-        oscillatorMap.delete(key);
+    const baseMidiNote = keyToMidiNote[key.toLowerCase()]; // Use toLowerCase for robustness
+    if (baseMidiNote !== undefined) {
+        const finalMidiNote = baseMidiNote + currentKeyboardOctaveOffset;
+        // No range check needed for stopNote, as we just try to stop whatever might have been played.
+        // The stopNoteByMidi function will handle if the note isn't actually playing.
+        stopNoteByMidi(finalMidiNote);
     }
 }
 
 // Event listeners for keyboard
-// document.addEventListener('keydown', (event) => {
-//     // Prevent repeated notes if key is held down
-//     if (event.repeat) return;
-//     const key = event.key.toUpperCase();
-//     playNote(key);
-// });
-//
-// document.addEventListener('keyup', (event) => {
-//     const key = event.key.toUpperCase();
-//     stopNote(key);
-// });
+document.addEventListener('keydown', (event) => {
+    // Prevent repeated notes if key is held down
+    if (event.repeat) return;
+    // Use event.key directly (it's lowercase for letters, or the symbol itself)
+    playNote(event.key);
+});
+
+document.addEventListener('keyup', (event) => {
+    // Use event.key directly
+    stopNote(event.key);
+});
 
 // Listen to waveform buttons
 const waveformButtons = document.querySelectorAll('.synth-button');

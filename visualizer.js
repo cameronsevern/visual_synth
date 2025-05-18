@@ -176,6 +176,67 @@ function getMidiNote(noteName, octave) {
     return noteOffset + (parseInt(octave) + 1) * 12;
 }
 
+// New function to highlight/unhighlight a specific key based on note name and octave
+// This will be called by synth.js
+function highlightKeyboardNote(noteName, octave, isNoteOn) {
+    if (!pianoRoll) return;
+
+    const keySelector = `.key[data-note="${noteName}"][data-octave="${octave}"]`;
+    const pianoKeyElement = pianoRoll.querySelector(keySelector);
+
+    if (pianoKeyElement) {
+        if (isNoteOn) {
+            pianoKeyElement.classList.add('active');
+        } else {
+            pianoKeyElement.classList.remove('active');
+        }
+    } else {
+        // console.warn(`Piano key element not found for note: ${noteName}, octave: ${octave}`);
+    }
+}
+// Expose the function to be callable from synth.js
+// Forward declaration for functions that might be called by synth.js or used internally
+let updateKeyboardRangeHighlightBox = () => {}; // Placeholder, will be defined below
+
+window.visualizer = {
+    highlightKeyboardNote: highlightKeyboardNote,
+    // Expose updateKeyboardRangeHighlightBox if synth.js needs to trigger it directly
+    // For now, visualizer.js will call it internally after octave changes.
+    // updateKeyboardRangeHighlightBox: () => updateKeyboardRangeHighlightBox()
+};
+
+// Function to update the visual highlight for the computer keyboard's active range
+updateKeyboardRangeHighlightBox = () => {
+    // Accessing global variables/functions from synth.js directly
+    if (!pianoRoll || typeof keyToMidiNote === 'undefined' || typeof currentKeyboardOctaveOffset === 'undefined' || typeof midiToNoteNameAndOctave !== 'function') {
+        // console.warn('Cannot update keyboard range highlight: missing synth components (keyToMidiNote, currentKeyboardOctaveOffset, midiToNoteNameAndOctave) or pianoRoll.');
+        return;
+    }
+
+    // Remove existing highlights
+    const allKeys = pianoRoll.querySelectorAll('.key.keyboard-range');
+    allKeys.forEach(key => key.classList.remove('keyboard-range'));
+
+    const baseMapping = keyToMidiNote; // Direct access
+    const offset = currentKeyboardOctaveOffset; // Direct access // This is in semitones
+
+    for (const keyboardKeyChar in baseMapping) {
+        const baseMidiNote = baseMapping[keyboardKeyChar];
+        const actualMidiNote = baseMidiNote + offset;
+
+        // Ensure the note is within displayable range if necessary, though highlighting should just work
+        if (actualMidiNote >= 21 && actualMidiNote <= 108) { // Standard 88-key range A0-C8
+            const { noteName, octave } = midiToNoteNameAndOctave(actualMidiNote); // Direct access
+            const keyElement = pianoRoll.querySelector(`.key[data-note="${noteName}"][data-octave="${octave}"]`);
+            if (keyElement) {
+                keyElement.classList.add('keyboard-range');
+            } else {
+                // console.warn(`Key element not found for highlight: ${noteName}${octave} (MIDI: ${actualMidiNote})`);
+            }
+        }
+    }
+};
+
 
 if (pianoRoll) {
     const handleNoteOn = (target) => {
@@ -187,8 +248,15 @@ if (pianoRoll) {
         }
 
         const noteName = target.dataset.note;
-        const currentOctave = parseInt(currentOctaveDisplay.textContent);
-        const midiNote = getMidiNote(noteName, currentOctave);
+        let keyOctave;
+        if (target.dataset.octave !== undefined) {
+            keyOctave = parseInt(target.dataset.octave);
+        } else {
+            // Fallback for keys without data-octave: use the global currentOctave.
+            // console.warn(`Key ${noteName} in handleNoteOn (mouse/touch) lacks data-octave. Using global currentOctave: ${currentOctaveDisplay.textContent}`);
+            keyOctave = parseInt(currentOctaveDisplay.textContent);
+        }
+        const midiNote = getMidiNote(noteName, keyOctave);
 
         if (midiNote !== null) {
             playNoteByMidi(midiNote);
@@ -204,8 +272,15 @@ if (pianoRoll) {
             return;
         }
         const noteName = target.dataset.note;
-        const currentOctave = parseInt(currentOctaveDisplay.textContent);
-        const midiNote = getMidiNote(noteName, currentOctave);
+        let keyOctave;
+        if (target.dataset.octave !== undefined) {
+            keyOctave = parseInt(target.dataset.octave);
+        } else {
+            // Fallback for keys without data-octave: use the global currentOctave.
+            // console.warn(`Key ${noteName} in handleNoteOff (mouse/touch) lacks data-octave. Using global currentOctave: ${currentOctaveDisplay.textContent}`);
+            keyOctave = parseInt(currentOctaveDisplay.textContent);
+        }
+        const midiNote = getMidiNote(noteName, keyOctave);
 
         if (midiNote !== null) {
             stopNoteByMidi(midiNote);
@@ -259,27 +334,48 @@ if (pianoRoll) {
     console.error('Piano roll element not found!');
 }
 
-if (octaveUpButton && currentOctaveDisplay) {
+if (octaveUpButton && currentOctaveDisplay && typeof setKeyboardOctaveOffset === 'function' && typeof currentKeyboardOctaveOffset !== 'undefined') {
     octaveUpButton.addEventListener('click', () => {
-        let currentOctave = parseInt(currentOctaveDisplay.textContent);
-        currentOctave = Math.min(8, currentOctave + 1); // Cap at octave 8
-        currentOctaveDisplay.textContent = currentOctave;
-        // console.log('Octave Up. New octave:', currentOctave);
+        // currentKeyboardOctaveOffset is in semitones. We want to shift by a full octave (+12 semitones).
+        // The display shows octave shift in terms of octaves (-2, -1, 0, 1, 2 etc.)
+        let currentOffsetInOctaves = currentKeyboardOctaveOffset / 12; // Direct access
+        let newOffsetInOctaves = Math.min(2, currentOffsetInOctaves + 1); // Cap at +2 octaves for example
+
+        setKeyboardOctaveOffset(newOffsetInOctaves); // Direct access
+        currentOctaveDisplay.textContent = newOffsetInOctaves >= 0 ? `+${newOffsetInOctaves}` : `${newOffsetInOctaves}`;
+        updateKeyboardRangeHighlightBox();
+        // console.log('Octave Up. New keyboard offset (octaves):', newOffsetInOctaves);
     });
 } else {
-    console.error('Octave Up button or display not found!');
+    console.error('Octave Up button, display, setKeyboardOctaveOffset, or currentKeyboardOctaveOffset not found!');
 }
 
-if (octaveDownButton && currentOctaveDisplay) {
+if (octaveDownButton && currentOctaveDisplay && typeof setKeyboardOctaveOffset === 'function' && typeof currentKeyboardOctaveOffset !== 'undefined') {
     octaveDownButton.addEventListener('click', () => {
-        let currentOctave = parseInt(currentOctaveDisplay.textContent);
-        currentOctave = Math.max(0, currentOctave - 1); // Cap at octave 0
-        currentOctaveDisplay.textContent = currentOctave;
-        // console.log('Octave Down. New octave:', currentOctave);
+        let currentOffsetInOctaves = currentKeyboardOctaveOffset / 12; // Direct access
+        let newOffsetInOctaves = Math.max(-2, currentOffsetInOctaves - 1); // Cap at -2 octaves for example
+
+        setKeyboardOctaveOffset(newOffsetInOctaves); // Direct access
+        currentOctaveDisplay.textContent = newOffsetInOctaves >= 0 ? `+${newOffsetInOctaves}` : `${newOffsetInOctaves}`;
+        updateKeyboardRangeHighlightBox();
+        // console.log('Octave Down. New keyboard offset (octaves):', newOffsetInOctaves);
     });
 } else {
-    console.error('Octave Down button or display not found!');
+    console.error('Octave Down button, display, setKeyboardOctaveOffset, or currentKeyboardOctaveOffset not found!');
 }
+
+// Initialize octave display and range box on load
+document.addEventListener('DOMContentLoaded', () => {
+    if (currentOctaveDisplay && typeof currentKeyboardOctaveOffset !== 'undefined') { // Direct access
+        const initialOffsetInOctaves = currentKeyboardOctaveOffset / 12; // Direct access
+        currentOctaveDisplay.textContent = initialOffsetInOctaves >= 0 ? `+${initialOffsetInOctaves}` : `${initialOffsetInOctaves}`;
+    }
+    // Ensure synth.js might be loaded and its globals available
+    if (typeof updateKeyboardRangeHighlightBox === 'function') {
+        updateKeyboardRangeHighlightBox(); // Initial call
+    }
+});
+
 
 // Keyboard controls
 const activeKeys = new Set(); // To track currently pressed keys and prevent re-triggering
@@ -301,20 +397,23 @@ const keyToNoteMapping = {
     'KeyU': 'A#',
 };
 
-function getPianoKeyElement(noteName, octave) {
-    // Find the on-screen piano key element to provide visual feedback
-    // Assumes piano key elements have a data-note attribute like "C", "C#", etc.
-    // and are identifiable perhaps by an ID or a combination of data attributes if octave matters for selection.
-    // For now, let's assume simple data-note matching.
-    // This might need refinement if multiple octaves of keys are visually distinct and selectable.
-    const keys = pianoRoll.querySelectorAll('.key');
-    for (const key of keys) {
-        if (key.dataset.note === noteName) {
-            // This basic selector will highlight all keys with the same note name (e.g., all C's)
-            // A more precise selector would be needed if visual feedback should be octave-specific
-            // and piano keys have unique IDs or more specific data attributes.
-            // For now, this provides general feedback for the pressed note name.
-            return key;
+function getPianoKeyElement(noteName, octaveOfNoteToHighlight) {
+    // Find the on-screen piano key element to provide visual feedback.
+    // Assumes piano key elements in a multi-octave display will have:
+    // <div class="key" data-note="C" data-octave="3"></div>
+    // The 'octaveOfNoteToHighlight' comes from currentOctaveDisplay for keyboard input.
+    if (pianoRoll) {
+        const keyElement = pianoRoll.querySelector(`.key[data-note="${noteName}"][data-octave="${octaveOfNoteToHighlight}"]`);
+        if (keyElement) {
+            return keyElement;
+        }
+        // Fallback: If no octave-specific key is found (e.g., for a single-octave display without data-octave attributes,
+        // or if the specific octave played via keyboard isn't part of the currently displayed set of keys),
+        // try to find a generic key matching the note name. This provides some feedback on simpler setups.
+        const genericKey = pianoRoll.querySelector(`.key[data-note="${noteName}"]`);
+        if (genericKey) {
+            // console.warn(`Piano key for ${noteName} octave ${octaveOfNoteToHighlight} not found. Falling back to generic ${noteName} key.`);
+            return genericKey;
         }
     }
     return null;
@@ -324,23 +423,17 @@ function getPianoKeyElement(noteName, octave) {
 window.addEventListener('keydown', (event) => {
     if (event.repeat) return; // Ignore key repeats
 
-    const noteName = keyToNoteMapping[event.code];
-    const currentOctave = parseInt(currentOctaveDisplay.textContent);
+    // The 'keyToNoteMapping' and note playing logic for computer keyboard
+    // is now primarily handled in synth.js.
+    // visualizer.js's keydown listener here is mainly for octave shortcuts.
 
-    if (noteName) {
-        if (activeKeys.has(event.code)) return; // Already playing this key
+    // const noteName = keyToNoteMapping[event.code]; // This mapping is local and outdated
+    // const currentOctave = parseInt(currentOctaveDisplay.textContent); // This refers to the keyboard octave shift
 
-        const midiNote = getMidiNote(noteName, currentOctave);
-        if (midiNote !== null && typeof playNoteByMidi === 'function') {
-            playNoteByMidi(midiNote);
-            activeKeys.add(event.code);
-            const pianoKeyElement = getPianoKeyElement(noteName, currentOctave);
-            if (pianoKeyElement) {
-                pianoKeyElement.classList.add('active');
-            }
-        }
-    } else {
-        // Octave controls
+    // if (noteName) { // Note playing is handled by synth.js's own listeners
+    //     // ...
+    // } else {
+        // Octave controls via 'Z' and 'X'
         if (event.code === 'KeyZ') { // Octave Down
             if (octaveDownButton) {
                 octaveDownButton.click(); // Simulate click
@@ -350,22 +443,15 @@ window.addEventListener('keydown', (event) => {
                 octaveUpButton.click(); // Simulate click
             }
         }
-    }
+    // }
 });
 
 window.addEventListener('keyup', (event) => {
-    const noteName = keyToNoteMapping[event.code];
-    const currentOctave = parseInt(currentOctaveDisplay.textContent);
-
-    if (noteName) {
-        const midiNote = getMidiNote(noteName, currentOctave);
-        if (midiNote !== null && typeof stopNoteByMidi === 'function') {
-            stopNoteByMidi(midiNote);
-            activeKeys.delete(event.code);
-            const pianoKeyElement = getPianoKeyElement(noteName, currentOctave);
-            if (pianoKeyElement) {
-                pianoKeyElement.classList.remove('active');
-            }
-        }
-    }
+    // Note stopping for computer keyboard is handled by synth.js's own listeners.
+    // This keyup listener in visualizer.js doesn't need to do anything for notes.
+    // const noteName = keyToNoteMapping[event.code];
+    // const currentOctave = parseInt(currentOctaveDisplay.textContent);
+    // if (noteName) {
+    //     // ...
+    // }
 });
