@@ -1,202 +1,253 @@
-html, body {
+html, body.fullscreen {
     height: 100%;
+    width: 100%; /* Ensure html also takes full width */
     margin: 0;
     padding: 0;
     overflow: hidden; /* Prevent scrollbars for a true full-screen experience */
 }
 
-body {
+body.fullscreen {
     font-family: 'Orbitron', sans-serif; /* A more futuristic/synth-like font */
     background-color: #101015; /* Dark, sophisticated base color */
     color: #E0E0E0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center; /* Center content vertically */
+    display: flex; /* Use flex to manage .main-wrapper */
+    flex-direction: column; /* Stack children vertically */
+    /* align-items: center; Removed for full-width layout */
+    /* justify-content: center; Removed for full-height layout */
     text-align: center;
 }
 
-.main-wrapper {
+.main-wrapper.fullscreen-wrapper {
     display: flex;
     flex-direction: column;
     width: 100%;
     height: 100%;
-    padding: 15px; /* Reduced padding for more content space */
+    padding: 15px;
     box-sizing: border-box;
     /* align-items: center; Removed to allow full width for children */
 }
 
 header {
     width: 100%;
-    padding: 10px 0; /* Reduced padding */
-    margin-bottom: 15px; /* Reduced margin */
-    border-bottom: 1px solid #00A0C0;
-    flex-shrink: 0;
+    padding: 10px 0;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #00A0C0; /* Accent color */
+    flex-shrink: 0; /* Prevent header from shrinking */
+    box-sizing: border-box;
 }
 
 header h1 {
-    font-size: 2em; /* Slightly smaller */
-    color: #00D0FF;
+    font-size: 2em;
+    color: #00D0FF; /* Bright accent color */
     font-weight: 500;
     letter-spacing: 2px;
     text-transform: uppercase;
     margin: 0;
 }
 
-.container { /* This is now primarily for visualizations */
+.container { /* For visualizations */
     display: flex;
-    flex-direction: column;
-    align-items: stretch; /* Stretch children to fill width */
-    justify-content: flex-start; /* Align visualizations to the top */
+    flex-direction: row; /* Arrange visualization containers side-by-side */
+    align-items: stretch; /* Stretch children to fill height */
+    justify-content: space-around; /* Distribute space between visualization containers */
     width: 100%;
-    /* max-width: 1200px; Removed for full width */
-    flex-grow: 1;
-    overflow: hidden; /* Hide overflow, visualizations will manage their own scroll if needed */
-    padding-bottom: 10px; /* Reduced space above controls */
+    flex-grow: 1; /* Take remaining vertical space */
+    overflow: hidden;
+    padding-bottom: 10px;
+    gap: 15px; /* Gap between visualization containers */
+    box-sizing: border-box;
 }
 
-.visualizations {
-    background-color: #181820;
-    padding: 15px; /* Reduced padding */
-    border-radius: 10px;
-    box-shadow: 0 0 25px rgba(0, 208, 255, 0.15);
+.visualizations { /* This class is on the parent of visualization-container divs */
+    /* background-color: #181820; */ /* Moved to .visualization-container */
+    /* padding: 15px; */ /* Moved to .visualization-container */
+    /* border-radius: 10px; */ /* Moved to .visualization-container */
+    /* box-shadow: 0 0 25px rgba(0, 208, 255, 0.15); */ /* Moved to .visualization-container */
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* Stack h2 and visualization-row */
     width: 100%;
-    gap: 10px; /* Reduced gap */
-    flex-grow: 1; /* Allow visualizations to take up all available vertical space */
-    overflow: auto; /* Allow internal scrolling if content overflows */
+    gap: 15px; /* Space between h2 and visualization-row */
+    flex-grow: 1;
+    /* overflow: auto; */
+    align-items: stretch;
 }
+
+.visualization-row { /* New rule */
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 15px; /* Space between individual visualization blocks */
+    flex-grow: 1;
+    align-items: stretch; /* Ensure children (visualization-container) stretch */
+}
+
+.visualization-container {
+    background-color: #181820; /* Darker shade for sections */
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 160, 192, 0.2); /* Softer, more focused shadow */
+    display: flex;
+    flex-direction: column; /* Stack h3 and canvas */
+    flex-basis: 0; /* Allow flex-grow to distribute space */
+    flex-grow: 1; /* Each visualization takes equal space */
+    overflow: hidden; /* Prevent content from spilling */
+}
+
 
 .controls {
     background-color: #181820;
-    padding: 10px 15px; /* Reduced padding for shorter height */
-    border-radius: 8px 8px 0 0; /* Rounded top corners, sharp bottom for flush look */
-    box-shadow: 0 -5px 15px rgba(0, 208, 255, 0.1); /* Shadow on top */
+    padding: 12px 20px; /* Slightly more padding for a more substantial feel */
+    border-radius: 10px 10px 0 0; /* Slightly larger radius */
+    box-shadow: 0 -6px 20px rgba(0, 160, 192, 0.15); /* Adjusted shadow */
     display: flex;
-    flex-direction: row; /* Align items in a row for a compact bar */
-    justify-content: center; /* Center items in the row */
+    flex-direction: row;
+    justify-content: center;
     align-items: center;
     width: 100%;
-    /* max-width: 600px; Removed for full width */
-    margin-top: auto;
-    flex-shrink: 0;
-    gap: 20px; /* Space between control items */
+    margin-top: auto; /* Pushes controls to the bottom of .main-wrapper */
+    flex-shrink: 0; /* Prevent controls from shrinking */
+    gap: 30px; /* Increased gap for better separation */
+    box-sizing: border-box;
 }
 
-.controls > div { /* Target the div wrapping label and select */
+.control-group { /* Wrapper for label and button-group */
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .visualization-area {
-    background-color: #0A0A0D; /* Very dark, almost black for canvas */
+    background-color: #0A0A0D;
     border-radius: 8px;
     width: 100%;
-    flex-grow: 1; /* Allow canvas to fill available space in its parent */
-    border: 1px solid #005060; /* Subtle border */
-    min-height: 560px; /* Doubled minimum height for each visual */
+    flex-grow: 1; /* Canvas takes available space within .visualization-container */
+    border: 1px solid #005060;
+    min-height: 300px; /* Adjusted based on new layout, can be tweaked */
+    /* height: 100%; */ /* Let flex-grow manage height */
 }
 
 h2, h3 {
     margin-top: 0;
-    margin-bottom: 15px;
+    margin-bottom: 12px; /* Slightly reduced margin */
     color: #00B0D0;
     font-weight: 400;
     border-bottom: 1px solid #007A8A;
     padding-bottom: 8px;
-    font-size: 1.3em;
+    font-size: 1.2em; /* Slightly adjusted */
+    text-align: left; /* Align section titles left */
 }
 
-h3 {
-    font-size: 1.1em;
-    margin-bottom: 10px;
+.visualizations > h2 { /* Target the main "Visualizations" title if it exists */
+    width: 100%;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+
+h3 { /* Titles for individual visualizations */
+    font-size: 1.0em; /* Slightly smaller for sub-sections */
+    margin-bottom: 8px;
     color: #00A0C0;
 }
 
 label {
-    display: block;
-    margin-bottom: 8px;
-    color: #A0A0A0;
+    /* display: block; */ /* No longer needed with flex in .control-group */
+    /* margin-bottom: 8px; */
+    color: #B0B0B0; /* Lighter label color */
     font-size: 0.9em;
-    text-align: left;
+    /* text-align: left; */ /* Handled by flex alignment */
 }
 
-/* Sleek and simple select (dropdown) styling */
-select {
-    width: auto; /* Adjust width based on content or a fixed min-width */
-    min-width: 150px;
-    padding: 8px 10px; /* Reduced padding */
-    margin-bottom: 0; /* Remove margin as items are flex-row aligned */
-    border-radius: 5px;
-    border: 1px solid #007A8A;
-    background-color: #202028; /* Darker background for select */
-    color: #D0D0D0;
-    font-size: 0.95em;
+/* Remove select styling as it's replaced by buttons */
+/* select { ... } */
+/* select:focus { ... } */
+/* select option { ... } */
+
+.button-group {
+    display: flex;
+    gap: 8px; /* Space between buttons */
+}
+
+.synth-button {
+    background-color: #252530; /* Dark, sleek button background */
+    color: #C0C0C0;
+    border: 1px solid #007A8A; /* Accent border */
+    padding: 8px 18px; /* Comfortable padding */
+    border-radius: 6px; /* Slightly rounded corners */
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9em;
     cursor: pointer;
-    appearance: none; /* Remove default system appearance */
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300D0FF' width='18px' height='18px'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e"); /* Custom arrow */
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    background-size: 18px;
-    transition: border-color 0.2s ease, background-color 0.2s ease;
-}
-
-select:focus {
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     outline: none;
-    border-color: #00D0FF;
-    background-color: #282830;
-    box-shadow: 0 0 10px rgba(0, 208, 255, 0.2);
 }
 
-select option {
-    background-color: #202028;
-    color: #D0D0D0;
+.synth-button:hover {
+    background-color: #30303c;
+    border-color: #00A0C0; /* Brighter border on hover */
+    color: #E0E0E0;
+}
+
+.synth-button.active {
+    background-color: #00A0C0; /* Accent color for active state */
+    color: #101015; /* Dark text on active button */
+    border-color: #00D0FF; /* Brightest border for active */
+    box-shadow: 0 0 10px rgba(0, 208, 255, 0.3);
+    font-weight: 500;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .main-wrapper {
+    .main-wrapper.fullscreen-wrapper {
         padding: 10px;
     }
     header h1 {
-        font-size: 1.6em; /* Further reduce for small screens */
+        font-size: 1.6em;
     }
-    .container {
+    .container { /* Visualizations container */
+        flex-direction: column; /* Stack visualization containers vertically */
+        gap: 10px;
         padding-bottom: 5px;
     }
-    .controls {
-        flex-direction: column; /* Stack controls on small screens */
-        padding: 10px;
+    .visualizations { /* Parent of .visualization-container */
+        flex-direction: column; /* Stack them if not already */
         gap: 10px;
-        border-radius: 8px; /* Full radius when stacked */
     }
-    .controls > div {
+    .visualization-container {
+        /* min-height: 200px; */ /* Adjust if needed for smaller screens */
+    }
+    .controls {
         flex-direction: column;
-        align-items: stretch; /* Make label/select full width */
+        padding: 10px;
+        gap: 15px; /* Adjusted gap for stacked controls */
+        border-radius: 8px;
+    }
+    .control-group {
+        flex-direction: column;
+        align-items: stretch;
         width: 100%;
         max-width: 300px; /* Limit width of control group */
+        gap: 8px;
     }
-    select {
-        width: 100%; /* Full width in stacked layout */
+    .button-group {
+        justify-content: center; /* Center buttons in stacked view */
     }
-
-    .visualizations {
-       min-height: 250px; /* Adjust min-height */
+    .synth-button {
+        padding: 8px 15px;
+        font-size: 0.85em;
     }
 
     .visualization-area {
-        min-height: 400px; /* Doubled min-height for smaller screens */
+        min-height: 200px; /* Adjust for smaller screens */
     }
 
-    h2 {
+    h2, h3 {
         font-size: 1.1em;
     }
+    .visualizations > h2 {
+        font-size: 1.2em;
+    }
     h3 {
-        font-size: 1em;
+        font-size: 0.95em;
     }
 }
 

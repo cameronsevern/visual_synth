@@ -73,21 +73,28 @@ document.addEventListener('keyup', (event) => {
     stopNote(key);
 });
 
-// Listen to waveform selector
-const waveformSelector = document.getElementById('waveform');
-if (waveformSelector) {
-    waveformSelector.addEventListener('change', (event) => {
-        waveformType = event.target.value;
-        // Optionally, update any currently playing oscillators, or just new ones
-        oscillatorMap.forEach(osc => {
-            osc.type = waveformType;
+// Listen to waveform buttons
+const waveformButtons = document.querySelectorAll('.synth-button');
+
+if (waveformButtons.length > 0) {
+    waveformButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Remove active class from all buttons
+            waveformButtons.forEach(btn => btn.classList.remove('active'));
+            // Add active class to the clicked button
+            button.classList.add('active');
+
+            waveformType = button.dataset.waveform;
+            // Update any currently playing oscillators
+            oscillatorMap.forEach(osc => {
+                osc.type = waveformType;
+            });
+            console.log(`Waveform changed to: ${waveformType}`);
         });
-        console.log(`Waveform changed to: ${waveformType}`);
     });
 } else {
-    console.error('Waveform selector not found in the DOM.');
+    console.error('Waveform buttons not found in the DOM.');
 }
-
 
 // Function for visualization script to get audio data
 function getAudioData() {

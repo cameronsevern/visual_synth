@@ -6,8 +6,8 @@
     <title>Interactive Audio Visualizer</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <div class="main-wrapper">
+<body class="fullscreen">
+    <div class="main-wrapper fullscreen-wrapper">
         <header>
             <h1>Interactive Audio Visualizer</h1>
         </header>
@@ -15,26 +15,28 @@
         <main class="container">
             <section class="visualizations">
                 <h2>Visualizations</h2>
-                <div>
-                    <h3>Waveform Display</h3>
-                    <canvas id="waveformCanvas" class="visualization-area"></canvas>
-                </div>
-                <div>
-                    <h3>Frequency Distribution (EQ)</h3>
-                    <canvas id="frequencyCanvas" class="visualization-area"></canvas>
+                <div class="visualization-row">
+                    <div class="visualization-container">
+                        <h3>Waveform Display</h3>
+                        <canvas id="waveformCanvas" class="visualization-area"></canvas>
+                    </div>
+                    <div class="visualization-container">
+                        <h3>Frequency Distribution (EQ)</h3>
+                        <canvas id="frequencyCanvas" class="visualization-area"></canvas>
+                    </div>
                 </div>
             </section>
         </main>
 
         <section class="controls">
             <h2>Controls</h2>
-            <div>
+            <div class="control-group">
                 <label for="waveform">Select Waveform:</label>
-                <select id="waveform" name="waveform">
-                    <option value="sine">Sine</option>
-                    <option value="square">Square</option>
-                    <option value="sawtooth">Sawtooth</option>
-                </select>
+                <div class="button-group">
+                    <button data-waveform="sine" class="synth-button active">Sine</button>
+                    <button data-waveform="square" class="synth-button">Square</button>
+                    <button data-waveform="sawtooth" class="synth-button">Sawtooth</button>
+                </div>
             </div>
         </section>
     </div>
