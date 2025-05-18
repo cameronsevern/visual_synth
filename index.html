@@ -9,19 +9,16 @@
 <body class="fullscreen">
     <div class="main-wrapper fullscreen-wrapper">
         <header>
-            <h1>Interactive Audio Visualizer</h1>
+            <h1>Visual Synth</h1>
         </header>
 
         <main class="container">
             <section class="visualizations">
-                <h2>Visualizations</h2>
                 <div class="visualization-row">
                     <div class="visualization-container">
-                        <h3>Waveform Display</h3>
                         <canvas id="waveformCanvas" class="visualization-area"></canvas>
                     </div>
                     <div class="visualization-container">
-                        <h3>Frequency Distribution (EQ)</h3>
                         <canvas id="frequencyCanvas" class="visualization-area"></canvas>
                     </div>
                 </div>
@@ -29,18 +26,15 @@
         </main>
 
         <section id="synth-controls-panel" class="controls-panel">
-            <h2>Synthesizer Controls</h2>
             <div class="control-group" id="waveform-controls">
-                <label>Waveform:</label>
                 <div class="button-group">
-                    <button data-waveform="sine" class="synth-button active">Sine</button>
-                    <button data-waveform="square" class="synth-button">Square</button>
-                    <button data-waveform="sawtooth" class="synth-button">Sawtooth</button>
+                    <button data-waveform="sine" class="synth-button active">∿</button>
+                    <button data-waveform="square" class="synth-button">□</button>
+                    <button data-waveform="sawtooth" class="synth-button">╱</button>
                 </div>
             </div>
 
             <div class="control-group" id="octave-controls">
-                <label>Octave:</label>
                 <div class="octave-selector">
                     <button id="octaveDown" class="octave-button">-</button>
                     <span id="currentOctave" class="current-octave-display">4</span>
@@ -49,7 +43,6 @@
             </div>
 
             <div class="control-group" id="adsr-controls">
-                <label>ADSR Envelope:</label>
                 <div class="adsr-sliders">
                     <div class="slider-container" id="attack-control">
                         <label for="attack-slider">A</label>
@@ -71,7 +64,6 @@
             </div>
 
             <div class="control-group" id="filter-controls">
-                <label>Filters:</label>
                 <div class="filter-knobs">
                     <div class="knob-container" id="lpf-control">
                         <label for="lpf-knob">LPF</label>
@@ -85,7 +77,6 @@
             </div>
         </section>
         <section class="piano-container">
-            <h2>Piano</h2>
             <div id="pianoRoll" class="piano-roll">
                 <!-- Piano Keys: A0 to C8 -->
                 <!-- Octave 0 -->

@@ -172,13 +172,14 @@ label {
     background-color: #252530; /* Dark, sleek button background */
     color: #C0C0C0;
     border: 1px solid #007A8A; /* Accent border */
-    padding: 8px 18px; /* Comfortable padding */
+    padding: 10px 15px; /* Adjusted padding */
     border-radius: 6px; /* Slightly rounded corners */
     font-family: 'Orbitron', sans-serif;
-    font-size: 0.9em;
+    font-size: 1.5em; /* Increased font size for symbols */
     cursor: pointer;
     transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     outline: none;
+    line-height: 1; /* Ensure symbols are vertically centered */
 }
 
 .synth-button:hover {
