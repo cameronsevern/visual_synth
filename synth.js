@@ -6,6 +6,30 @@ const oscillatorMap = new Map();
 let waveformType = 'sine'; // Default waveform
 let currentKeyboardOctaveOffset = 0; // In semitones (e.g., 0 for no shift, 12 for one octave up, -12 for one octave down)
 
+// --- New ADSR and Filter Parameters ---
+let attackTime = 0.01;    // seconds
+let decayTime = 0.1;      // seconds
+let sustainLevel = 0.8;   // 0.0 to 1.0
+let releaseTime = 0.5;    // seconds
+
+let lpfCutoff = 20000;    // Hz
+let hpfCutoff = 20;       // Hz
+
+// --- New Audio Nodes ---
+const lpfNode = audioContext.createBiquadFilter();
+lpfNode.type = 'lowpass';
+lpfNode.frequency.value = lpfCutoff;
+
+const hpfNode = audioContext.createBiquadFilter();
+hpfNode.type = 'highpass';
+hpfNode.frequency.value = hpfCutoff;
+
+// Updated Audio Graph: [source] -> lpfNode -> hpfNode -> analyser -> destination
+lpfNode.connect(hpfNode);
+hpfNode.connect(analyser);
+analyser.connect(audioContext.destination); // Ensure analyser output is connected
+// analyser is already connected to audioContext.destination (original line 16)
+
 // Function to be called by UI controls (e.g., from visualizer.js) to set the keyboard's octave shift
 function setKeyboardOctaveOffset(offsetInOctaves) {
     currentKeyboardOctaveOffset = offsetInOctaves * 12;
@@ -13,7 +37,7 @@ function setKeyboardOctaveOffset(offsetInOctaves) {
 }
 
 // Connect analyser to destination to ensure it processes audio
-analyser.connect(audioContext.destination);
+// analyser.connect(audioContext.destination); // This is now handled by hpfNode.connect(analyser)
 
 // Helper to resume AudioContext
 function resumeAudioContextIfNeeded() {
@@ -40,12 +64,23 @@ function midiToNoteNameAndOctave(midiNote) {
 function playNoteByMidi(midiNote) {
     resumeAudioContextIfNeeded(); // Ensure audio context is active
 
-    // Check if this specific MIDI note is already in the map (e.g. from QWERTY or another source)
-    // For simplicity, we allow re-triggering by stopping the old one if it exists.
+    const now = audioContext.currentTime;
+
+    // Handle re-triggering: stop and clean up the old note if it exists
     if (oscillatorMap.has(midiNote)) {
-        const oldOscillator = oscillatorMap.get(midiNote);
-        oldOscillator.stop(audioContext.currentTime);
-        oldOscillator.disconnect();
+        const oldNoteData = oscillatorMap.get(midiNote);
+        // console.log(`Re-triggering MIDI note ${midiNote}. Stopping previous instance.`);
+        oldNoteData.envelopeGainNode.gain.cancelScheduledValues(now);
+        oldNoteData.envelopeGainNode.gain.setValueAtTime(oldNoteData.envelopeGainNode.gain.value, now); // Start from current gain
+        oldNoteData.envelopeGainNode.gain.linearRampToValueAtTime(0.0001, now + 0.02); // Very fast fade
+        oldNoteData.oscillator.stop(now + 0.02);
+
+        const oldOsc = oldNoteData.oscillator;
+        const oldGain = oldNoteData.envelopeGainNode;
+        oldOsc.onended = () => {
+            try { oldOsc.disconnect(); } catch (e) { /* console.warn('Old osc disconnect error on re-trigger:', e); */ }
+            try { oldGain.disconnect(); } catch (e) { /* console.warn('Old gain disconnect error on re-trigger:', e); */ }
+        };
         oscillatorMap.delete(midiNote);
     }
 
@@ -56,13 +91,23 @@ function playNoteByMidi(midiNote) {
     }
 
     const oscillator = audioContext.createOscillator();
-    oscillator.type = waveformType;
-    oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+    const envelopeGainNode = audioContext.createGain();
 
-    oscillator.connect(analyser);
-    oscillator.start();
-    oscillatorMap.set(midiNote, oscillator); // Use midiNote (number) as key
-    // console.log(`Playing MIDI: ${midiNote}, Freq: ${freq.toFixed(2)}, Wave: ${waveformType}`);
+    oscillator.type = waveformType;
+    oscillator.frequency.setValueAtTime(freq, now);
+
+    // Connect nodes: oscillator -> envelopeGainNode -> lpfNode (-> hpfNode -> analyser)
+    oscillator.connect(envelopeGainNode);
+    envelopeGainNode.connect(lpfNode);
+
+    // Apply ADSR Attack and Decay
+    envelopeGainNode.gain.setValueAtTime(0, now); // Start at 0 gain
+    envelopeGainNode.gain.linearRampToValueAtTime(1.0, now + attackTime); // Attack peak
+    envelopeGainNode.gain.linearRampToValueAtTime(sustainLevel, now + attackTime + decayTime); // Decay to sustain
+
+    oscillator.start(now);
+    oscillatorMap.set(midiNote, { oscillator, envelopeGainNode });
+    // console.log(`Playing MIDI: ${midiNote}, Freq: ${freq.toFixed(2)}, Wave: ${waveformType}, A:${attackTime} D:${decayTime} S:${sustainLevel}`);
 
     if (typeof visualizer !== 'undefined' && visualizer.highlightKeyboardNote) {
         const { noteName, octave } = midiToNoteNameAndOctave(midiNote);
@@ -72,19 +117,25 @@ function playNoteByMidi(midiNote) {
 
 function stopNoteByMidi(midiNote) {
     if (oscillatorMap.has(midiNote)) {
-        const oscillator = oscillatorMap.get(midiNote);
-        // Optional: Add a small ramp down to avoid clicks
-        // const now = audioContext.currentTime;
-        // if (oscillator.gain) { // If a gain node was used
-        //    oscillator.gain.setValueAtTime(oscillator.gain.value, now);
-        //    oscillator.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
-        //    oscillator.stop(now + 0.05);
-        // } else {
-        oscillator.stop(audioContext.currentTime); // Immediate stop
-        // }
-        oscillator.disconnect();
-        oscillatorMap.delete(midiNote);
-        // console.log(`Stopped MIDI: ${midiNote}`);
+        const noteData = oscillatorMap.get(midiNote);
+        const { oscillator, envelopeGainNode } = noteData;
+        const now = audioContext.currentTime;
+
+        // Apply ADSR Release
+        envelopeGainNode.gain.cancelScheduledValues(now); // Cancel any ongoing ramps (like decay)
+        envelopeGainNode.gain.setValueAtTime(envelopeGainNode.gain.value, now); // Start release from current gain value
+        envelopeGainNode.gain.linearRampToValueAtTime(0.0001, now + releaseTime); // Ramp to (near) zero
+
+        oscillator.stop(now + releaseTime); // Stop oscillator after release time
+        oscillatorMap.delete(midiNote); // Remove from map, note is stopping
+
+        // Schedule disconnection of nodes after they've finished playing
+        oscillator.onended = () => {
+            try { oscillator.disconnect(); } catch (e) { /* console.warn('Stop osc disconnect error:', e); */ }
+            try { envelopeGainNode.disconnect(); } catch (e) { /* console.warn('Stop gain disconnect error:', e); */ }
+            // console.log(`MIDI note ${midiNote} fully stopped and disconnected after release.`);
+        };
+        // console.log(`Stopping MIDI: ${midiNote}, R:${releaseTime}`);
 
         if (typeof visualizer !== 'undefined' && visualizer.highlightKeyboardNote) {
             const { noteName, octave } = midiToNoteNameAndOctave(midiNote);
@@ -203,7 +254,80 @@ function getAudioData() {
     };
 }
 
-console.log('synth.js loaded and audio context initialized.');
+// --- DOMContentLoaded: Initialize Controls and Event Listeners ---
+document.addEventListener('DOMContentLoaded', () => {
+    // DOM Element References
+    const attackSlider = document.getElementById('attack-slider');
+    const decaySlider = document.getElementById('decay-slider');
+    const sustainSlider = document.getElementById('sustain-slider');
+    const releaseSlider = document.getElementById('release-slider');
+
+    const lpfKnob = document.getElementById('lpf-knob');
+    const hpfKnob = document.getElementById('hpf-knob');
+
+    function initSynthControls() {
+        if (attackSlider) attackSlider.value = attackTime;
+        if (decaySlider) decaySlider.value = decayTime;
+        if (sustainSlider) sustainSlider.value = sustainLevel;
+        if (releaseSlider) releaseSlider.value = releaseTime;
+
+        if (lpfKnob) lpfKnob.value = lpfCutoff;
+        if (hpfKnob) hpfKnob.value = hpfCutoff;
+
+        // Apply initial filter values to audio nodes (already set at creation, but good for consistency)
+        lpfNode.frequency.setValueAtTime(lpfCutoff, audioContext.currentTime);
+        hpfNode.frequency.setValueAtTime(hpfCutoff, audioContext.currentTime);
+        // console.log('Synth controls initialized with default values.');
+    }
+
+    function setupControlEvents() {
+        if (attackSlider) {
+            attackSlider.addEventListener('input', (e) => {
+                attackTime = parseFloat(e.target.value);
+                // console.log('Attack set to:', attackTime);
+            });
+        }
+        if (decaySlider) {
+            decaySlider.addEventListener('input', (e) => {
+                decayTime = parseFloat(e.target.value);
+                // console.log('Decay set to:', decayTime);
+            });
+        }
+        if (sustainSlider) {
+            sustainSlider.addEventListener('input', (e) => {
+                sustainLevel = Math.max(0.0001, Math.min(1.0, parseFloat(e.target.value))); // Clamp 0.0001 to 1.0
+                // console.log('Sustain set to:', sustainLevel);
+            });
+        }
+        if (releaseSlider) {
+            releaseSlider.addEventListener('input', (e) => {
+                releaseTime = parseFloat(e.target.value);
+                // console.log('Release set to:', releaseTime);
+            });
+        }
+
+        if (lpfKnob) {
+            lpfKnob.addEventListener('input', (e) => {
+                lpfCutoff = parseFloat(e.target.value);
+                lpfNode.frequency.setTargetAtTime(lpfCutoff, audioContext.currentTime, 0.01); // Smooth change
+                // console.log('LPF Cutoff set to:', lpfCutoff);
+            });
+        }
+        if (hpfKnob) {
+            hpfKnob.addEventListener('input', (e) => {
+                hpfCutoff = parseFloat(e.target.value);
+                hpfNode.frequency.setTargetAtTime(hpfCutoff, audioContext.currentTime, 0.01); // Smooth change
+                // console.log('HPF Cutoff set to:', hpfCutoff);
+            });
+        }
+        // console.log('Synth control event listeners set up.');
+    }
+
+    initSynthControls();
+    setupControlEvents();
+});
+
+console.log('synth.js loaded, audio context initialized, and new controls set up.');
 
 // Example: Call getAudioData periodically for visualization (visualization script would do this)
 // setInterval(() => {

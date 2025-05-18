@@ -28,18 +28,62 @@
             </section>
         </main>
 
-        <section class="controls">
-            <h2>Controls</h2>
-            <div class="control-group">
-                <label for="waveform">Select Waveform:</label>
+        <section id="synth-controls-panel" class="controls-panel">
+            <h2>Synthesizer Controls</h2>
+            <div class="control-group" id="waveform-controls">
+                <label>Waveform:</label>
                 <div class="button-group">
                     <button data-waveform="sine" class="synth-button active">Sine</button>
                     <button data-waveform="square" class="synth-button">Square</button>
                     <button data-waveform="sawtooth" class="synth-button">Sawtooth</button>
                 </div>
             </div>
-        </section>
 
+            <div class="control-group" id="octave-controls">
+                <label>Octave:</label>
+                <div class="octave-selector">
+                    <button id="octaveDown" class="octave-button">-</button>
+                    <span id="currentOctave" class="current-octave-display">4</span>
+                    <button id="octaveUp" class="octave-button">+</button>
+                </div>
+            </div>
+
+            <div class="control-group" id="adsr-controls">
+                <label>ADSR Envelope:</label>
+                <div class="adsr-sliders">
+                    <div class="slider-container" id="attack-control">
+                        <label for="attack-slider">A</label>
+                        <input type="range" id="attack-slider" min="0.01" max="2" step="0.01" value="0.01" class="adsr-slider">
+                    </div>
+                    <div class="slider-container" id="decay-control">
+                        <label for="decay-slider">D</label>
+                        <input type="range" id="decay-slider" min="0.01" max="2" step="0.01" value="0.1" class="adsr-slider">
+                    </div>
+                    <div class="slider-container" id="sustain-control">
+                        <label for="sustain-slider">S</label>
+                        <input type="range" id="sustain-slider" min="0.01" max="1" step="0.01" value="0.8" class="adsr-slider">
+                    </div>
+                    <div class="slider-container" id="release-control">
+                        <label for="release-slider">R</label>
+                        <input type="range" id="release-slider" min="0.01" max="2" step="0.01" value="0.5" class="adsr-slider">
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-group" id="filter-controls">
+                <label>Filters:</label>
+                <div class="filter-knobs">
+                    <div class="knob-container" id="lpf-control">
+                        <label for="lpf-knob">LPF</label>
+                        <input type="range" id="lpf-knob" min="20" max="20000" step="1" value="20000" class="filter-knob">
+                    </div>
+                    <div class="knob-container" id="hpf-control">
+                        <label for="hpf-knob">HPF</label>
+                        <input type="range" id="hpf-knob" min="20" max="20000" step="1" value="20" class="filter-knob">
+                    </div>
+                </div>
+            </div>
+        </section>
         <section class="piano-container">
             <h2>Piano</h2>
             <div id="pianoRoll" class="piano-roll">
@@ -144,14 +188,6 @@
             </div>
         </section>
 
-        <section class="octave-selector-container">
-            <h2>Octave</h2>
-            <div class="octave-selector">
-                <button id="octaveDown" class="octave-button">-</button>
-                <span id="currentOctave" class="current-octave-display">4</span>
-                <button id="octaveUp" class="octave-button">+</button>
-            </div>
-        </section>
     </div>
 
     <script src="synth.js"></script>

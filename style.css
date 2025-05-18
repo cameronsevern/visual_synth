@@ -514,3 +514,210 @@ label {
         height: 50%;
     }
 }
+/* Synth Controls Panel Styles */
+#synth-controls-panel {
+    background-color: #1c1c22;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 160, 192, 0.1);
+    display: flex;
+    flex-direction: row; /* MODIFIED: Arrange control groups horizontally */
+    flex-wrap: wrap; /* MODIFIED: Allow groups to wrap */
+    justify-content: space-around; /* MODIFIED: Distribute groups */
+    align-items: flex-start; /* MODIFIED: Align groups at the top */
+    gap: 20px;
+    border: 1px solid #007A8A;
+}
+
+/* Styles for specific control groups like ADSR and Filters */
+/* This selector was previously '.adsr-controls .control-group', corrected to target the group itself */
+#adsr-controls,
+#filter-controls {
+    display: flex;
+    flex-direction: column; /* Stack main label above sliders/knobs */
+    align-items: center;   /* Center the main label and the slider/knob group below it */
+    gap: 10px; /* Increased gap for clarity */
+    padding: 10px;
+    background-color: #222228;
+    border-radius: 6px;
+    border: 1px solid #005060;
+    min-width: 200px; /* Give some base width to these complex groups */
+}
+
+#adsr-controls > label, /* Target the main label of ADSR/Filter groups */
+#filter-controls > label {
+    font-size: 1em;
+    color: #00D0FF;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.adsr-sliders,
+.filter-knobs {
+    display: flex;
+    flex-direction: row; /* Arrange individual sliders/knobs horizontally */
+    gap: 15px; /* Space between individual ADSR sliders or filter knobs */
+    align-items: center;
+    justify-content: center; /* Center the set of sliders/knobs */
+    flex-wrap: wrap; /* Allow sliders/knobs to wrap if needed */
+    width: 100%; /* Take full width of parent #adsr-controls or #filter-controls */
+}
+
+.slider-container, /* Container for one ADSR slider (label + input) or one filter knob */
+.knob-container {
+    display: flex;
+    flex-direction: row; /* Label beside the input element */
+    align-items: center;
+    gap: 8px; /* Space between label (e.g., "A") and its slider */
+}
+
+.slider-container label,
+.knob-container label {
+    font-size: 0.9em;
+    color: #B0B0B0;
+    min-width: 25px; /* e.g. for "LPF" or "A" */
+    text-align: right;
+}
+
+input[type="range"].adsr-slider,
+input[type="range"].filter-knob {
+    width: 100px; /* Adjust width as needed */
+    height: auto; /* Allow browser to determine height or set explicitly */
+    margin: 0;
+    vertical-align: middle;
+    cursor: pointer;
+    /* Basic appearance reset */
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+}
+
+/* Track styling */
+input[type="range"].adsr-slider::-webkit-slider-runnable-track,
+input[type="range"].filter-knob::-webkit-slider-runnable-track {
+    height: 8px;
+    background: #005060;
+    border-radius: 4px;
+}
+input[type="range"].adsr-slider::-moz-range-track,
+input[type="range"].filter-knob::-moz-range-track {
+    height: 8px;
+    background: #005060;
+    border-radius: 4px;
+    border: none;
+}
+
+/* Thumb styling */
+input[type="range"].adsr-slider::-webkit-slider-thumb,
+input[type="range"].filter-knob::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    margin-top: -4px; /* (track_height - thumb_height) / 2 -> (8 - 16) / 2 = -4 */
+    background-color: #00A0C0;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    border: 1px solid #00D0FF;
+    box-shadow: 0 0 5px rgba(0, 208, 255, 0.2);
+}
+input[type="range"].adsr-slider::-moz-range-thumb,
+input[type="range"].filter-knob::-moz-range-thumb {
+    background-color: #00A0C0;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    border: 1px solid #00D0FF;
+    box-shadow: 0 0 5px rgba(0, 208, 255, 0.2);
+}
+
+
+/* REMOVED .adsr-slider-placeholder styles */
+/* REMOVED .filter-knob-placeholder styles */
+/* REMOVED placeholder label styles (e.g., #attack-slider-label) */
+/* The .synth-controls-group, .synth-controls-group h4, .synth-controls-row styles are kept for now,
+   as they might be used by other parts or future controls. They don't conflict with the new ADSR/Filter structure. */
+
+.synth-controls-group { /* Lines 530-539 from original - kept as is */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    background-color: #222228;
+    border-radius: 6px;
+    border: 1px solid #005060;
+}
+
+.synth-controls-group h4 { /* Lines 541-548 from original - kept as is */
+    margin: 0 10px 0 0;
+    color: #00B0D0;
+    font-size: 0.9em;
+    font-weight: 500;
+    min-width: 80px;
+    text-align: right;
+}
+
+.synth-controls-row { /* Lines 550-555 from original - kept as is */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+
+/* Responsive adjustments for synth controls panel */
+@media (max-width: 768px) {
+    #synth-controls-panel {
+        flex-direction: column; /* MODIFIED: Stack groups vertically on small screens */
+        align-items: stretch; /* MODIFIED: Groups take full width */
+        gap: 15px;
+        padding: 10px;
+    }
+
+    #adsr-controls,
+    #filter-controls {
+        align-items: stretch; /* Stretch content like labels and slider groups */
+    }
+
+    .adsr-sliders,
+    .filter-knobs {
+        justify-content: space-around; /* Better distribution on smaller screens */
+        gap: 10px;
+    }
+
+    .slider-container,
+    .knob-container {
+        flex-direction: column; /* Stack label above slider on small screens */
+        align-items: center;
+        gap: 4px;
+        min-width: 60px; /* Ensure some space for each control */
+    }
+    .slider-container label,
+    .knob-container label {
+        text-align: center; /* Center label when stacked */
+        min-width: auto;
+    }
+
+    input[type="range"].adsr-slider,
+    input[type="range"].filter-knob {
+        width: 80px; /* Slightly smaller sliders */
+    }
+
+    /* Original responsive rules for .synth-controls-group (lines 643-652 in original file) are kept */
+    .synth-controls-group {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+    .synth-controls-group h4 {
+        text-align: left;
+        margin-bottom: 8px;
+        min-width: auto;
+    }
+    /* Original responsive rule for .synth-controls-row (lines 653-655 in original file) is kept */
+     .synth-controls-row {
+        justify-content: space-around;
+    }
+    /* REMOVED responsive styles for adsr-slider-placeholder and filter-knob-placeholder */
+}
