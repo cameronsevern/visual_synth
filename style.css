@@ -233,8 +233,8 @@ label {
         justify-content: center; /* Center buttons in stacked view */
     }
     .synth-button {
-        padding: 8px 15px;
-        font-size: 0.85em;
+        padding: 10px 18px; /* Increased padding */
+        font-size: 0.9em;   /* Increased font size */
     }
 
     .visualization-area {
@@ -311,7 +311,7 @@ label {
 .key.active { /* Style for when a key is actively played */
     background-color: #00D0FF; /* Bright active color */
     border-color: #00FFFF;
-    box-shadow: 0 0 10px rgba(0, 208, 255, 0.5);
+    box-shadow: 0 0 12px rgba(0, 208, 255, 0.6); /* Enhanced shadow for mobile */
 }
 
 /* Visual cue for the range of keys playable by the computer keyboard */
@@ -322,12 +322,12 @@ label {
 /* Ensure active state overrides playable cue's box-shadow but cue remains visible */
 .white-key.active.playable-key-cue {
     background-color: #00D0FF; /* Active color */
-    box-shadow: inset 0 0 0 2px #FF8C00, 0 0 10px rgba(0, 208, 255, 0.5); /* Combine shadows */
+    box-shadow: inset 0 0 0 2px #FF8C00, 0 0 12px rgba(0, 208, 255, 0.6); /* Combine shadows, enhanced */
 }
 
 .black-key.active.playable-key-cue {
     background-color: #00A0C0; /* Slightly different active for black keys if needed, or keep consistent */
-    box-shadow: inset 0 0 0 2px #FF8C00, 0 0 8px rgba(0, 208, 255, 0.4); /* Combine shadows */
+    box-shadow: inset 0 0 0 2px #FF8C00, 0 0 10px rgba(0, 208, 255, 0.5); /* Combine shadows, enhanced */
 }
 
 
@@ -484,11 +484,11 @@ label {
         /* Consider making keys smaller or allowing scroll if too wide */
     }
     .white-key {
-        width: 35px;
+        width: 40px; /* Increased from 35px */
     }
     .black-key {
-        width: 22px;
-        height: 55%;
+        width: 25px; /* Increased from 22px */
+        height: 58%; /* Adjusted from 55% */
     }
     .key {
         font-size: 0.7em;
@@ -498,42 +498,44 @@ label {
     }
     /* Black key positions for 768px (white-key: 35px, black-key: 22px) */
     /* Octave 2 */
-    [id="note-C#-octave-2"] { left: 34px; }
-    [id="note-D#-octave-2"] { left: 69px; }
-    [id="note-F#-octave-2"] { left: 139px; }
-    [id="note-G#-octave-2"] { left: 174px; }
-    [id="note-A#-octave-2"] { left: 209px; }
-    /* Octave 3 */
-    [id="note-C#-octave-3"] { left: 279px; } /* 245 + 24 + 10 */
-    [id="note-D#-octave-3"] { left: 314px; } /* 245 + 59 + 10 */
-    [id="note-F#-octave-3"] { left: 384px; } /* 245 + 129 + 10 */
-    [id="note-G#-octave-3"] { left: 419px; } /* 245 + 164 + 10 */
-    [id="note-A#-octave-3"] { left: 454px; } /* 245 + 199 + 10 */
-    /* Octave 4 */
-    [id="note-C#-octave-4"] { left: 524px; } /* 490 + 24 + 10 */
-    [id="note-D#-octave-4"] { left: 559px; } /* 490 + 59 + 10 */
-    [id="note-F#-octave-4"] { left: 629px; } /* 490 + 129 + 10 */
-    [id="note-G#-octave-4"] { left: 664px; } /* 490 + 164 + 10 */
-    [id="note-A#-octave-4"] { left: 699px; } /* 490 + 199 + 10 */
-    /* Octave 5 */
-    [id="note-C#-octave-5"] { left: 769px; } /* 735 + 24 + 10 */
-    [id="note-D#-octave-5"] { left: 804px; } /* 735 + 59 + 10 */
-    [id="note-F#-octave-5"] { left: 874px; } /* 735 + 129 + 10 */
-    [id="note-G#-octave-5"] { left: 909px; } /* 735 + 164 + 10 */
-    [id="note-A#-octave-5"] { left: 944px; } /* 735 + 199 + 10 */
-    /* Octave 6 */
-    [id="note-C#-octave-6"] { left: 1014px; } /* 980 + 24 + 10 */
-    [id="note-D#-octave-6"] { left: 1049px; } /* 980 + 59 + 10 */
-    [id="note-F#-octave-6"] { left: 1119px; } /* 980 + 129 + 10 */
-    [id="note-G#-octave-6"] { left: 1154px; } /* 980 + 164 + 10 */
-    [id="note-A#-octave-6"] { left: 1189px; } /* 980 + 199 + 10 */
+    /* Recalculated for white-key: 40px, padding: 10px, offset factor: 0.7 */
+    /* Octave 2 (Base offset: 10px) */
+    [id="note-C#-octave-2"] { left: 38px; }  /* 10 + 40*0.7 */
+    [id="note-D#-octave-2"] { left: 78px; }  /* 10 + 40 + 40*0.7 */
+    [id="note-F#-octave-2"] { left: 158px; } /* 10 + 3*40 + 40*0.7 */
+    [id="note-G#-octave-2"] { left: 198px; } /* 10 + 4*40 + 40*0.7 */
+    [id="note-A#-octave-2"] { left: 238px; } /* 10 + 5*40 + 40*0.7 */
+    /* Octave 3 (Base offset: 10px + 7*40 = 290px) */
+    [id="note-C#-octave-3"] { left: 318px; } /* 290 + 40*0.7 */
+    [id="note-D#-octave-3"] { left: 358px; } /* 290 + 40 + 40*0.7 */
+    [id="note-F#-octave-3"] { left: 438px; } /* 290 + 3*40 + 40*0.7 */
+    [id="note-G#-octave-3"] { left: 478px; } /* 290 + 4*40 + 40*0.7 */
+    [id="note-A#-octave-3"] { left: 518px; } /* 290 + 5*40 + 40*0.7 */
+    /* Octave 4 (Base offset: 10px + 14*40 = 570px) */
+    [id="note-C#-octave-4"] { left: 598px; } /* 570 + 40*0.7 */
+    [id="note-D#-octave-4"] { left: 638px; } /* 570 + 40 + 40*0.7 */
+    [id="note-F#-octave-4"] { left: 718px; } /* 570 + 3*40 + 40*0.7 */
+    [id="note-G#-octave-4"] { left: 758px; } /* 570 + 4*40 + 40*0.7 */
+    [id="note-A#-octave-4"] { left: 798px; } /* 570 + 5*40 + 40*0.7 */
+    /* Octave 5 (Base offset: 10px + 21*40 = 850px) */
+    [id="note-C#-octave-5"] { left: 878px; } /* 850 + 40*0.7 */
+    [id="note-D#-octave-5"] { left: 918px; } /* 850 + 40 + 40*0.7 */
+    [id="note-F#-octave-5"] { left: 998px; } /* 850 + 3*40 + 40*0.7 */
+    [id="note-G#-octave-5"] { left: 1038px; } /* 850 + 4*40 + 40*0.7 */
+    [id="note-A#-octave-5"] { left: 1078px; } /* 850 + 5*40 + 40*0.7 */
+    /* Octave 6 (Base offset: 10px + 28*40 = 1130px) */
+    [id="note-C#-octave-6"] { left: 1158px; } /* 1130 + 40*0.7 */
+    [id="note-D#-octave-6"] { left: 1198px; } /* 1130 + 40 + 40*0.7 */
+    [id="note-F#-octave-6"] { left: 1278px; } /* 1130 + 3*40 + 40*0.7 */
+    [id="note-G#-octave-6"] { left: 1318px; } /* 1130 + 4*40 + 40*0.7 */
+    [id="note-A#-octave-6"] { left: 1358px; } /* 1130 + 5*40 + 40*0.7 */
 
     .octave-selector {
         gap: 10px;
     }
     .octave-button {
-        padding: 6px 12px;
-        font-size: 0.9em;
+        padding: 8px 15px; /* Increased padding */
+        font-size: 1em;     /* Increased font size */
     }
     .current-octave-display {
         font-size: 1em;
@@ -548,43 +550,45 @@ label {
         height: 100px;
     }
     .white-key {
-        width: 28px;
+        width: 36px; /* Increased from 28px */
     }
     .black-key {
-        width: 18px;
-        height: 50%;
+        width: 22px; /* Increased from 18px */
+        height: 55%; /* Adjusted from 50% */
     }
     /* Black key positions for 480px (white-key: 28px, black-key: 18px) */
     /* Octave 2 */
-    [id="note-C#-octave-2"] { left: 29px; }
-    [id="note-D#-octave-2"] { left: 57px; }
-    [id="note-F#-octave-2"] { left: 113px; }
-    [id="note-G#-octave-2"] { left: 141px; }
-    [id="note-A#-octave-2"] { left: 169px; }
-    /* Octave 3 */
-    [id="note-C#-octave-3"] { left: 225px; } /* 196 + 19 + 10 */
-    [id="note-D#-octave-3"] { left: 253px; } /* 196 + 47 + 10 */
-    [id="note-F#-octave-3"] { left: 309px; } /* 196 + 103 + 10 */
-    [id="note-G#-octave-3"] { left: 337px; } /* 196 + 131 + 10 */
-    [id="note-A#-octave-3"] { left: 365px; } /* 196 + 159 + 10 */
-    /* Octave 4 */
-    [id="note-C#-octave-4"] { left: 421px; } /* 392 + 19 + 10 */
-    [id="note-D#-octave-4"] { left: 449px; } /* 392 + 47 + 10 */
-    [id="note-F#-octave-4"] { left: 505px; } /* 392 + 103 + 10 */
-    [id="note-G#-octave-4"] { left: 533px; } /* 392 + 131 + 10 */
-    [id="note-A#-octave-4"] { left: 561px; } /* 392 + 159 + 10 */
-    /* Octave 5 */
-    [id="note-C#-octave-5"] { left: 617px; } /* 588 + 19 + 10 */
-    [id="note-D#-octave-5"] { left: 645px; } /* 588 + 47 + 10 */
-    [id="note-F#-octave-5"] { left: 701px; } /* 588 + 103 + 10 */
-    [id="note-G#-octave-5"] { left: 729px; } /* 588 + 131 + 10 */
-    [id="note-A#-octave-5"] { left: 757px; } /* 588 + 159 + 10 */
-    /* Octave 6 */
-    [id="note-C#-octave-6"] { left: 813px; } /* 784 + 19 + 10 */
-    [id="note-D#-octave-6"] { left: 841px; } /* 784 + 47 + 10 */
-    [id="note-F#-octave-6"] { left: 897px; } /* 784 + 103 + 10 */
-    [id="note-G#-octave-6"] { left: 925px; } /* 784 + 131 + 10 */
-    [id="note-A#-octave-6"] { left: 953px; } /* 784 + 159 + 10 */
+    /* Recalculated for white-key: 36px, padding: 10px, offset factor: 0.7 */
+    /* Octave 2 (Base offset: 10px) */
+    [id="note-C#-octave-2"] { left: 35px; }  /* 10 + 36*0.7 (25.2) */
+    [id="note-D#-octave-2"] { left: 71px; }  /* 10 + 36 + 36*0.7 */
+    [id="note-F#-octave-2"] { left: 143px; } /* 10 + 3*36 + 36*0.7 */
+    [id="note-G#-octave-2"] { left: 179px; } /* 10 + 4*36 + 36*0.7 */
+    [id="note-A#-octave-2"] { left: 215px; } /* 10 + 5*36 + 36*0.7 */
+    /* Octave 3 (Base offset: 10px + 7*36 = 262px) */
+    [id="note-C#-octave-3"] { left: 287px; } /* 262 + 36*0.7 */
+    [id="note-D#-octave-3"] { left: 323px; } /* 262 + 36 + 36*0.7 */
+    [id="note-F#-octave-3"] { left: 395px; } /* 262 + 3*36 + 36*0.7 */
+    [id="note-G#-octave-3"] { left: 431px; } /* 262 + 4*36 + 36*0.7 */
+    [id="note-A#-octave-3"] { left: 467px; } /* 262 + 5*36 + 36*0.7 */
+    /* Octave 4 (Base offset: 10px + 14*36 = 514px) */
+    [id="note-C#-octave-4"] { left: 539px; } /* 514 + 36*0.7 */
+    [id="note-D#-octave-4"] { left: 575px; } /* 514 + 36 + 36*0.7 */
+    [id="note-F#-octave-4"] { left: 647px; } /* 514 + 3*36 + 36*0.7 */
+    [id="note-G#-octave-4"] { left: 683px; } /* 514 + 4*36 + 36*0.7 */
+    [id="note-A#-octave-4"] { left: 719px; } /* 514 + 5*36 + 36*0.7 */
+    /* Octave 5 (Base offset: 10px + 21*36 = 766px) */
+    [id="note-C#-octave-5"] { left: 791px; } /* 766 + 36*0.7 */
+    [id="note-D#-octave-5"] { left: 827px; } /* 766 + 36 + 36*0.7 */
+    [id="note-F#-octave-5"] { left: 899px; } /* 766 + 3*36 + 36*0.7 */
+    [id="note-G#-octave-5"] { left: 935px; } /* 766 + 4*36 + 36*0.7 */
+    [id="note-A#-octave-5"] { left: 971px; } /* 766 + 5*36 + 36*0.7 */
+    /* Octave 6 (Base offset: 10px + 28*36 = 1018px) */
+    [id="note-C#-octave-6"] { left: 1043px; } /* 1018 + 36*0.7 */
+    [id="note-D#-octave-6"] { left: 1079px; } /* 1018 + 36 + 36*0.7 */
+    [id="note-F#-octave-6"] { left: 1151px; } /* 1018 + 3*36 + 36*0.7 */
+    [id="note-G#-octave-6"] { left: 1187px; } /* 1018 + 4*36 + 36*0.7 */
+    [id="note-A#-octave-6"] { left: 1223px; } /* 1018 + 5*36 + 36*0.7 */
 }
 /* Synth Controls Panel Styles */
 #synth-controls-panel {
@@ -668,15 +672,15 @@ input[type="range"].filter-knob {
 /* Track styling */
 input[type="range"].adsr-slider::-webkit-slider-runnable-track,
 input[type="range"].filter-knob::-webkit-slider-runnable-track {
-    height: 8px;
+    height: 10px; /* Increased from 8px */
     background: #005060;
-    border-radius: 4px;
+    border-radius: 5px; /* Increased from 4px */
 }
 input[type="range"].adsr-slider::-moz-range-track,
 input[type="range"].filter-knob::-moz-range-track {
-    height: 8px;
+    height: 10px; /* Increased from 8px */
     background: #005060;
-    border-radius: 4px;
+    border-radius: 5px; /* Increased from 4px */
     border: none;
 }
 
@@ -685,10 +689,10 @@ input[type="range"].adsr-slider::-webkit-slider-thumb,
 input[type="range"].filter-knob::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    margin-top: -4px; /* (track_height - thumb_height) / 2 -> (8 - 16) / 2 = -4 */
+    margin-top: -5px; /* (new_track_height (10) - new_thumb_height (20)) / 2 = -5 */
     background-color: #00A0C0;
-    height: 16px;
-    width: 16px;
+    height: 20px; /* Increased from 16px */
+    width: 20px;  /* Increased from 16px */
     border-radius: 50%;
     border: 1px solid #00D0FF;
     box-shadow: 0 0 5px rgba(0, 208, 255, 0.2);
@@ -696,8 +700,8 @@ input[type="range"].filter-knob::-webkit-slider-thumb {
 input[type="range"].adsr-slider::-moz-range-thumb,
 input[type="range"].filter-knob::-moz-range-thumb {
     background-color: #00A0C0;
-    height: 16px;
-    width: 16px;
+    height: 20px; /* Increased from 16px */
+    width: 20px;  /* Increased from 16px */
     border-radius: 50%;
     border: 1px solid #00D0FF;
     box-shadow: 0 0 5px rgba(0, 208, 255, 0.2);
