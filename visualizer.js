@@ -43,19 +43,34 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const drawFrequencySpectrum = (dataArray, bufferLength) => {
-        frequencyCtx.fillStyle = 'rgb(20, 20, 20)';
+        frequencyCtx.fillStyle = 'rgb(20, 20, 20)'; // Background
         frequencyCtx.fillRect(0, 0, frequencyCanvas.width, frequencyCanvas.height);
 
-        const barWidth = (frequencyCanvas.width / bufferLength) * 2.5;
-        let x = 0;
+        const binSlotWidth = frequencyCanvas.width / bufferLength;
+        const pointRadius = 2; // Fixed radius for the points
 
         for (let i = 0; i < bufferLength; i++) {
-            const barHeight = dataArray[i] * (frequencyCanvas.height / 255); // dataArray is Uint8Array
+            const value = dataArray[i]; // Current bin value (0-255)
 
-            frequencyCtx.fillStyle = `rgb(${barHeight + 100}, 50, 50)`;
-            frequencyCtx.fillRect(x, frequencyCanvas.height - barHeight, barWidth, barHeight);
+            // Calculate the x-coordinate for the center of the point (top-center of the old bar)
+            const x_center = i * binSlotWidth + binSlotWidth / 2;
 
-            x += barWidth + 1;
+            // Calculate the y-coordinate for the center of the point (top of the old bar)
+            // The 'value' determines the height of the old bar.
+            // Bar height would be proportional to 'value' relative to canvas height.
+            const barHeight = (value / 255.0) * frequencyCanvas.height;
+            // The y-coordinate is measured from the top of the canvas.
+            // So, y_center for the top of the bar is canvas.height - barHeight.
+            let y_center = frequencyCanvas.height - barHeight;
+
+            // Ensure y_center is within canvas bounds, adjust if pointRadius makes it go outside
+            y_center = Math.max(pointRadius, y_center); // Prevent drawing above canvas top
+            y_center = Math.min(frequencyCanvas.height - pointRadius, y_center); // Prevent drawing below canvas bottom
+
+            frequencyCtx.beginPath();
+            frequencyCtx.arc(x_center, y_center, pointRadius, 0, 2 * Math.PI, false);
+            frequencyCtx.fillStyle = 'rgb(200, 50, 50)'; // Fixed red color for the points
+            frequencyCtx.fill();
         }
     };
 
