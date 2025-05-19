@@ -237,96 +237,150 @@ updatePlayableKeyCue = () => {
 
 
 if (pianoRoll) {
-    const handleNoteOn = (target) => {
-        if (!target.classList.contains('key')) return;
-        // Ensure synth functions are available
-        if (typeof playNoteByMidi !== 'function') {
-            console.error('playNoteByMidi is not defined. Is synth.js loaded and functions exposed?');
-            return;
-        }
+    let isDragging = false;
+    let lastPlayedMidiNoteOnDrag = null;
 
-        const noteName = target.dataset.note;
+    // Helper function to get note data from a key element
+    const getKeyData = (element) => {
+        if (!element || !element.classList.contains('key')) return null;
+
+        const noteName = element.dataset.note;
         let keyOctave;
-        if (target.dataset.octave !== undefined) {
-            keyOctave = parseInt(target.dataset.octave);
+        // Piano keys should have 'data-octave'. Fallback to currentOctaveDisplay is less ideal for specific key elements.
+        if (element.dataset.octave !== undefined) {
+            keyOctave = parseInt(element.dataset.octave);
         } else {
-            // Fallback for keys without data-octave: use the global currentOctave.
-            // console.warn(`Key ${noteName} in handleNoteOn (mouse/touch) lacks data-octave. Using global currentOctave: ${currentOctaveDisplay.textContent}`);
+            // This case should ideally not happen for piano roll keys if HTML is structured correctly.
+            console.warn(`Key ${noteName} is missing data-octave. Using global currentOctave: ${currentOctaveDisplay.textContent}`);
             keyOctave = parseInt(currentOctaveDisplay.textContent);
         }
         const midiNote = getMidiNote(noteName, keyOctave);
+        return { element, midiNote, noteName, keyOctave };
+    };
 
-        if (midiNote !== null) {
-            playNoteByMidi(midiNote);
-            target.classList.add('active'); // Add visual feedback
+    // Helper to update visual state of a key by MIDI note
+    // Relies on midiToNoteNameAndOctave from synth.js and highlightKeyboardNote from this file
+    const updateKeyVisualStateByMidi = (midiNote, isActive) => {
+        if (typeof midiToNoteNameAndOctave !== 'function') {
+            // console.warn('midiToNoteNameAndOctave is not available to update key visual state.');
+            return;
+        }
+        const noteDetails = midiToNoteNameAndOctave(midiNote); // Expected { noteName, octave, baseNote, originalMidi }
+        if (noteDetails && typeof noteDetails.noteName === 'string' && typeof noteDetails.octave === 'number') {
+            highlightKeyboardNote(noteDetails.noteName, noteDetails.octave, isActive);
+        } else {
+            // console.warn(`Could not get note details for MIDI: ${midiNote}`);
         }
     };
 
-    const handleNoteOff = (target) => {
-        if (!target.classList.contains('key')) return;
-         // Ensure synth functions are available
-        if (typeof stopNoteByMidi !== 'function') {
-            console.error('stopNoteByMidi is not defined.');
-            return;
+    const startNoteInteraction = (keyData) => {
+        if (typeof playNoteByMidi !== 'function' || typeof stopNoteByMidi !== 'function') {
+            console.error('Synth functions (playNoteByMidi/stopNoteByMidi) not available.');
+            return false;
         }
-        const noteName = target.dataset.note;
-        let keyOctave;
-        if (target.dataset.octave !== undefined) {
-            keyOctave = parseInt(target.dataset.octave);
-        } else {
-            // Fallback for keys without data-octave: use the global currentOctave.
-            // console.warn(`Key ${noteName} in handleNoteOff (mouse/touch) lacks data-octave. Using global currentOctave: ${currentOctaveDisplay.textContent}`);
-            keyOctave = parseInt(currentOctaveDisplay.textContent);
-        }
-        const midiNote = getMidiNote(noteName, keyOctave);
 
-        if (midiNote !== null) {
-            stopNoteByMidi(midiNote);
-            target.classList.remove('active'); // Remove visual feedback
+        if (lastPlayedMidiNoteOnDrag !== null && lastPlayedMidiNoteOnDrag !== keyData.midiNote) {
+            stopNoteByMidi(lastPlayedMidiNoteOnDrag);
+            updateKeyVisualStateByMidi(lastPlayedMidiNoteOnDrag, false);
+        }
+        if (keyData.midiNote !== lastPlayedMidiNoteOnDrag || !isDragging) { // Play if new note or if starting a new drag
+             playNoteByMidi(keyData.midiNote);
+        }
+        updateKeyVisualStateByMidi(keyData.midiNote, true);
+        lastPlayedMidiNoteOnDrag = keyData.midiNote;
+        return true;
+    };
+
+    const stopLastDraggedNote = () => {
+        if (lastPlayedMidiNoteOnDrag !== null) {
+            if (typeof stopNoteByMidi === 'function') {
+                stopNoteByMidi(lastPlayedMidiNoteOnDrag);
+            }
+            updateKeyVisualStateByMidi(lastPlayedMidiNoteOnDrag, false);
+            lastPlayedMidiNoteOnDrag = null;
         }
     };
 
     // Mouse events
     pianoRoll.addEventListener('mousedown', (event) => {
-        if (event.target.classList.contains('key')) {
-            handleNoteOn(event.target);
+        if (event.buttons !== 1) return; // Only react to left mouse button
+        const keyData = getKeyData(event.target);
+        if (keyData) {
+            event.preventDefault(); // Prevent text selection, etc.
+            isDragging = true;
+            document.body.classList.add('dragging-piano-key'); // Optional: for global cursor styles
+            startNoteInteraction(keyData);
         }
     });
 
-    pianoRoll.addEventListener('mouseup', (event) => {
-        if (event.target.classList.contains('key')) {
-            handleNoteOff(event.target);
+    document.addEventListener('mousemove', (event) => {
+        if (!isDragging) return;
+        event.preventDefault();
+
+        let targetElement = document.elementFromPoint(event.clientX, event.clientY);
+
+        if (targetElement && pianoRoll.contains(targetElement) && targetElement.classList.contains('key')) {
+            const keyData = getKeyData(targetElement);
+            if (keyData && keyData.midiNote !== lastPlayedMidiNoteOnDrag) {
+                startNoteInteraction(keyData); // This will stop previous and play new
+            }
+        } else {
+            // Moved off a key or outside pianoRoll while dragging
+            stopLastDraggedNote();
         }
     });
 
-    pianoRoll.addEventListener('mouseleave', (event) => {
-        // If mouse leaves while a key is pressed (e.g. mouse down then drag out)
-        if (event.target.classList.contains('key') && event.target.classList.contains('active')) {
-            handleNoteOff(event.target);
+    document.addEventListener('mouseup', (event) => {
+        if (event.button !== 0) return; // Only react to left mouse button release
+        if (isDragging) {
+            stopLastDraggedNote();
+            isDragging = false;
+            document.body.classList.remove('dragging-piano-key');
         }
     });
 
     // Touch events
     pianoRoll.addEventListener('touchstart', (event) => {
-        if (event.target.classList.contains('key')) {
-            event.preventDefault(); // Prevent mouse event emulation and scrolling
-            handleNoteOn(event.target);
+        // Iterate over changedTouches for multi-touch, but problem implies single touch interaction for piano glide
+        const touch = event.changedTouches[0];
+        const keyData = getKeyData(touch.target); // touch.target should be the element that received the touchstart
+
+        if (keyData) {
+            event.preventDefault(); // Prevent mouse event emulation, scrolling, zoom
+            isDragging = true; // Use the same flag for unified logic
+            // No need for document.body.classList for touch, typically
+            startNoteInteraction(keyData);
         }
     }, { passive: false });
 
-    pianoRoll.addEventListener('touchend', (event) => {
-        if (event.target.classList.contains('key')) {
-            event.preventDefault();
-            handleNoteOff(event.target);
-        }
-    });
+    pianoRoll.addEventListener('touchmove', (event) => {
+        if (!isDragging) return;
+        event.preventDefault();
 
-    pianoRoll.addEventListener('touchcancel', (event) => {
-        if (event.target.classList.contains('key')) {
-            event.preventDefault();
-            handleNoteOff(event.target);
+        const touch = event.changedTouches[0];
+        const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+
+        if (targetElement && pianoRoll.contains(targetElement) && targetElement.classList.contains('key')) {
+            const keyData = getKeyData(targetElement);
+            if (keyData && keyData.midiNote !== lastPlayedMidiNoteOnDrag) {
+                startNoteInteraction(keyData);
+            }
+        } else {
+            // Touched outside a key or outside pianoRoll
+            stopLastDraggedNote();
         }
-    });
+    }, { passive: false });
+
+    const handleTouchEndOrCancel = (event) => {
+        if (isDragging) {
+            // event.preventDefault(); // Not always needed for touchend/cancel but can prevent unexpected behavior
+            stopLastDraggedNote();
+            isDragging = false;
+        }
+    };
+
+    pianoRoll.addEventListener('touchend', handleTouchEndOrCancel, { passive: false });
+    pianoRoll.addEventListener('touchcancel', handleTouchEndOrCancel, { passive: false });
 
 } else {
     console.error('Piano roll element not found!');
