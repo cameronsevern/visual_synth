@@ -27,11 +27,20 @@ const hpfNode = audioContext.createBiquadFilter();
 hpfNode.type = 'highpass';
 hpfNode.frequency.value = hpfCutoff;
 
-// Updated Audio Graph: [source] -> lpfNode -> hpfNode -> analyser -> destination
+// --- Dynamics Compressor Node ---
+const compressorNode = audioContext.createDynamicsCompressor();
+compressorNode.threshold.setValueAtTime(-50, audioContext.currentTime);
+compressorNode.knee.setValueAtTime(40, audioContext.currentTime);
+compressorNode.ratio.setValueAtTime(12, audioContext.currentTime);
+compressorNode.attack.setValueAtTime(0, audioContext.currentTime);
+compressorNode.release.setValueAtTime(0.25, audioContext.currentTime);
+
+// Updated Audio Graph: [source] -> lpfNode -> hpfNode -> analyser -> compressorNode -> destination
 lpfNode.connect(hpfNode);
 hpfNode.connect(analyser);
-analyser.connect(audioContext.destination); // Ensure analyser output is connected
-// analyser is already connected to audioContext.destination (original line 16)
+analyser.connect(compressorNode); // analyser now connects to compressor
+compressorNode.connect(audioContext.destination); // compressor connects to destination
+// analyser is already connected to audioContext.destination (original line 16) - This comment is now outdated.
 
 // Function to be called by UI controls (e.g., from visualizer.js) to set the keyboard's octave shift
 function setKeyboardOctaveOffset(offsetInOctaves) {
