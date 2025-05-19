@@ -366,35 +366,35 @@ label {
 
 /* Specific Black Key Positions (based on 50px white key width, C2-C7 range) */
 /* Octave 2 */
-[id="note-C#-octave-2"] { left: 35px; }
-[id="note-D#-octave-2"] { left: 85px; }
-[id="note-F#-octave-2"] { left: 185px; }
-[id="note-G#-octave-2"] { left: 235px; }
-[id="note-A#-octave-2"] { left: 285px; }
+[id="note-C#-octave-2"] { left: 45px; }
+[id="note-D#-octave-2"] { left: 95px; }
+[id="note-F#-octave-2"] { left: 195px; }
+[id="note-G#-octave-2"] { left: 245px; }
+[id="note-A#-octave-2"] { left: 295px; }
 /* Octave 3 */
-[id="note-C#-octave-3"] { left: 385px; }
-[id="note-D#-octave-3"] { left: 435px; }
-[id="note-F#-octave-3"] { left: 535px; }
-[id="note-G#-octave-3"] { left: 585px; }
-[id="note-A#-octave-3"] { left: 635px; }
+[id="note-C#-octave-3"] { left: 395px; }
+[id="note-D#-octave-3"] { left: 445px; }
+[id="note-F#-octave-3"] { left: 545px; }
+[id="note-G#-octave-3"] { left: 595px; }
+[id="note-A#-octave-3"] { left: 645px; }
 /* Octave 4 */
-[id="note-C#-octave-4"] { left: 735px; }
-[id="note-D#-octave-4"] { left: 785px; }
-[id="note-F#-octave-4"] { left: 885px; }
-[id="note-G#-octave-4"] { left: 935px; }
-[id="note-A#-octave-4"] { left: 985px; }
+[id="note-C#-octave-4"] { left: 745px; }
+[id="note-D#-octave-4"] { left: 795px; }
+[id="note-F#-octave-4"] { left: 895px; }
+[id="note-G#-octave-4"] { left: 945px; }
+[id="note-A#-octave-4"] { left: 995px; }
 /* Octave 5 */
-[id="note-C#-octave-5"] { left: 1085px; }
-[id="note-D#-octave-5"] { left: 1135px; }
-[id="note-F#-octave-5"] { left: 1235px; }
-[id="note-G#-octave-5"] { left: 1285px; }
-[id="note-A#-octave-5"] { left: 1335px; }
+[id="note-C#-octave-5"] { left: 1095px; }
+[id="note-D#-octave-5"] { left: 1145px; }
+[id="note-F#-octave-5"] { left: 1245px; }
+[id="note-G#-octave-5"] { left: 1295px; }
+[id="note-A#-octave-5"] { left: 1345px; }
 /* Octave 6 */
-[id="note-C#-octave-6"] { left: 1435px; }
-[id="note-D#-octave-6"] { left: 1485px; }
-[id="note-F#-octave-6"] { left: 1585px; }
-[id="note-G#-octave-6"] { left: 1635px; }
-[id="note-A#-octave-6"] { left: 1685px; }
+[id="note-C#-octave-6"] { left: 1445px; }
+[id="note-D#-octave-6"] { left: 1495px; }
+[id="note-F#-octave-6"] { left: 1595px; }
+[id="note-G#-octave-6"] { left: 1645px; }
+[id="note-A#-octave-6"] { left: 1695px; }
 
 /* Octave Selector Styles */
 .octave-selector-container {
@@ -496,8 +496,37 @@ label {
     .black-key {
         font-size: 0.6em;
     }
-    /* Adjust black key positions for smaller white keys */
-
+    /* Black key positions for 768px (white-key: 35px, black-key: 22px) */
+    /* Octave 2 */
+    [id="note-C#-octave-2"] { left: 34px; }
+    [id="note-D#-octave-2"] { left: 69px; }
+    [id="note-F#-octave-2"] { left: 139px; }
+    [id="note-G#-octave-2"] { left: 174px; }
+    [id="note-A#-octave-2"] { left: 209px; }
+    /* Octave 3 */
+    [id="note-C#-octave-3"] { left: 279px; } /* 245 + 24 + 10 */
+    [id="note-D#-octave-3"] { left: 314px; } /* 245 + 59 + 10 */
+    [id="note-F#-octave-3"] { left: 384px; } /* 245 + 129 + 10 */
+    [id="note-G#-octave-3"] { left: 419px; } /* 245 + 164 + 10 */
+    [id="note-A#-octave-3"] { left: 454px; } /* 245 + 199 + 10 */
+    /* Octave 4 */
+    [id="note-C#-octave-4"] { left: 524px; } /* 490 + 24 + 10 */
+    [id="note-D#-octave-4"] { left: 559px; } /* 490 + 59 + 10 */
+    [id="note-F#-octave-4"] { left: 629px; } /* 490 + 129 + 10 */
+    [id="note-G#-octave-4"] { left: 664px; } /* 490 + 164 + 10 */
+    [id="note-A#-octave-4"] { left: 699px; } /* 490 + 199 + 10 */
+    /* Octave 5 */
+    [id="note-C#-octave-5"] { left: 769px; } /* 735 + 24 + 10 */
+    [id="note-D#-octave-5"] { left: 804px; } /* 735 + 59 + 10 */
+    [id="note-F#-octave-5"] { left: 874px; } /* 735 + 129 + 10 */
+    [id="note-G#-octave-5"] { left: 909px; } /* 735 + 164 + 10 */
+    [id="note-A#-octave-5"] { left: 944px; } /* 735 + 199 + 10 */
+    /* Octave 6 */
+    [id="note-C#-octave-6"] { left: 1014px; } /* 980 + 24 + 10 */
+    [id="note-D#-octave-6"] { left: 1049px; } /* 980 + 59 + 10 */
+    [id="note-F#-octave-6"] { left: 1119px; } /* 980 + 129 + 10 */
+    [id="note-G#-octave-6"] { left: 1154px; } /* 980 + 164 + 10 */
+    [id="note-A#-octave-6"] { left: 1189px; } /* 980 + 199 + 10 */
 
     .octave-selector {
         gap: 10px;
@@ -525,6 +554,37 @@ label {
         width: 18px;
         height: 50%;
     }
+    /* Black key positions for 480px (white-key: 28px, black-key: 18px) */
+    /* Octave 2 */
+    [id="note-C#-octave-2"] { left: 29px; }
+    [id="note-D#-octave-2"] { left: 57px; }
+    [id="note-F#-octave-2"] { left: 113px; }
+    [id="note-G#-octave-2"] { left: 141px; }
+    [id="note-A#-octave-2"] { left: 169px; }
+    /* Octave 3 */
+    [id="note-C#-octave-3"] { left: 225px; } /* 196 + 19 + 10 */
+    [id="note-D#-octave-3"] { left: 253px; } /* 196 + 47 + 10 */
+    [id="note-F#-octave-3"] { left: 309px; } /* 196 + 103 + 10 */
+    [id="note-G#-octave-3"] { left: 337px; } /* 196 + 131 + 10 */
+    [id="note-A#-octave-3"] { left: 365px; } /* 196 + 159 + 10 */
+    /* Octave 4 */
+    [id="note-C#-octave-4"] { left: 421px; } /* 392 + 19 + 10 */
+    [id="note-D#-octave-4"] { left: 449px; } /* 392 + 47 + 10 */
+    [id="note-F#-octave-4"] { left: 505px; } /* 392 + 103 + 10 */
+    [id="note-G#-octave-4"] { left: 533px; } /* 392 + 131 + 10 */
+    [id="note-A#-octave-4"] { left: 561px; } /* 392 + 159 + 10 */
+    /* Octave 5 */
+    [id="note-C#-octave-5"] { left: 617px; } /* 588 + 19 + 10 */
+    [id="note-D#-octave-5"] { left: 645px; } /* 588 + 47 + 10 */
+    [id="note-F#-octave-5"] { left: 701px; } /* 588 + 103 + 10 */
+    [id="note-G#-octave-5"] { left: 729px; } /* 588 + 131 + 10 */
+    [id="note-A#-octave-5"] { left: 757px; } /* 588 + 159 + 10 */
+    /* Octave 6 */
+    [id="note-C#-octave-6"] { left: 813px; } /* 784 + 19 + 10 */
+    [id="note-D#-octave-6"] { left: 841px; } /* 784 + 47 + 10 */
+    [id="note-F#-octave-6"] { left: 897px; } /* 784 + 103 + 10 */
+    [id="note-G#-octave-6"] { left: 925px; } /* 784 + 131 + 10 */
+    [id="note-A#-octave-6"] { left: 953px; } /* 784 + 159 + 10 */
 }
 /* Synth Controls Panel Styles */
 #synth-controls-panel {
