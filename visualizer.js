@@ -196,43 +196,41 @@ function highlightKeyboardNote(noteName, octave, isNoteOn) {
 }
 // Expose the function to be callable from synth.js
 // Forward declaration for functions that might be called by synth.js or used internally
-let updateKeyboardRangeHighlightBox = () => {}; // Placeholder, will be defined below
+let updatePlayableKeyCue = () => {}; // Renamed placeholder
 
 window.visualizer = {
     highlightKeyboardNote: highlightKeyboardNote,
-    // Expose updateKeyboardRangeHighlightBox if synth.js needs to trigger it directly
-    // For now, visualizer.js will call it internally after octave changes.
-    // updateKeyboardRangeHighlightBox: () => updateKeyboardRangeHighlightBox()
+    updateMappedRangeHighlight: () => updatePlayableKeyCue() // Exposed as updateMappedRangeHighlight
 };
 
-// Function to update the visual highlight for the computer keyboard's active range
-updateKeyboardRangeHighlightBox = () => {
-    // Accessing global variables/functions from synth.js directly
-    if (!pianoRoll || typeof keyToMidiNote === 'undefined' || typeof currentKeyboardOctaveOffset === 'undefined' || typeof midiToNoteNameAndOctave !== 'function') {
-        // console.warn('Cannot update keyboard range highlight: missing synth components (keyToMidiNote, currentKeyboardOctaveOffset, midiToNoteNameAndOctave) or pianoRoll.');
+// Function to update the visual cue for the computer keyboard's active playable range
+updatePlayableKeyCue = () => {
+    // Accessing global functions from synth.js directly
+    if (!pianoRoll || typeof getCurrentlyMappedMidiRange !== 'function' || typeof midiToNoteNameAndOctave !== 'function') {
+        // console.warn('Cannot update playable key cue: missing synth functions (getCurrentlyMappedMidiRange, midiToNoteNameAndOctave) or pianoRoll.');
         return;
     }
 
-    // Remove existing highlights
-    const allKeys = pianoRoll.querySelectorAll('.key.keyboard-range');
-    allKeys.forEach(key => key.classList.remove('keyboard-range'));
+    // Remove existing cues
+    const allPianoKeys = pianoRoll.querySelectorAll('.key');
+    allPianoKeys.forEach(key => key.classList.remove('playable-key-cue'));
 
-    const baseMapping = keyToMidiNote; // Direct access
-    const offset = currentKeyboardOctaveOffset; // Direct access // This is in semitones
+    const mappedRange = getCurrentlyMappedMidiRange(); // Get {min, max} MIDI notes
 
-    for (const keyboardKeyChar in baseMapping) {
-        const baseMidiNote = baseMapping[keyboardKeyChar];
-        const actualMidiNote = baseMidiNote + offset;
+    if (!mappedRange || typeof mappedRange.min === 'undefined' || typeof mappedRange.max === 'undefined') {
+        // console.warn('Playable range data from getCurrentlyMappedMidiRange is invalid.');
+        return;
+    }
 
-        // Ensure the note is within displayable range if necessary, though highlighting should just work
-        if (actualMidiNote >= 21 && actualMidiNote <= 108) { // Standard 88-key range A0-C8
-            const { noteName, octave } = midiToNoteNameAndOctave(actualMidiNote); // Direct access
-            const keyElement = pianoRoll.querySelector(`.key[data-note="${noteName}"][data-octave="${octave}"]`);
-            if (keyElement) {
-                keyElement.classList.add('keyboard-range');
-            } else {
-                // console.warn(`Key element not found for highlight: ${noteName}${octave} (MIDI: ${actualMidiNote})`);
-            }
+    for (let midiNote = mappedRange.min; midiNote <= mappedRange.max; midiNote++) {
+        // getCurrentlyMappedMidiRange already ensures notes are within the 61-key display range (MIDI 36-96)
+        // if they are part of the QWERTY mapping.
+        const { noteName, octave } = midiToNoteNameAndOctave(midiNote); // Direct access
+        const keyElement = pianoRoll.querySelector(`.key[data-note="${noteName}"][data-octave="${octave}"]`);
+        if (keyElement) {
+            keyElement.classList.add('playable-key-cue');
+        } else {
+            // console.warn(`Key element not found for playable cue: ${noteName}${octave} (MIDI: ${midiNote})`);
         }
     }
 };
@@ -343,7 +341,7 @@ if (octaveUpButton && currentOctaveDisplay && typeof setKeyboardOctaveOffset ===
 
         setKeyboardOctaveOffset(newOffsetInOctaves); // Direct access
         currentOctaveDisplay.textContent = newOffsetInOctaves >= 0 ? `+${newOffsetInOctaves}` : `${newOffsetInOctaves}`;
-        updateKeyboardRangeHighlightBox();
+        updatePlayableKeyCue(); // Call renamed function
         // console.log('Octave Up. New keyboard offset (octaves):', newOffsetInOctaves);
     });
 } else {
@@ -357,7 +355,7 @@ if (octaveDownButton && currentOctaveDisplay && typeof setKeyboardOctaveOffset =
 
         setKeyboardOctaveOffset(newOffsetInOctaves); // Direct access
         currentOctaveDisplay.textContent = newOffsetInOctaves >= 0 ? `+${newOffsetInOctaves}` : `${newOffsetInOctaves}`;
-        updateKeyboardRangeHighlightBox();
+        updatePlayableKeyCue(); // Call renamed function
         // console.log('Octave Down. New keyboard offset (octaves):', newOffsetInOctaves);
     });
 } else {
@@ -371,8 +369,8 @@ document.addEventListener('DOMContentLoaded', () => {
         currentOctaveDisplay.textContent = initialOffsetInOctaves >= 0 ? `+${initialOffsetInOctaves}` : `${initialOffsetInOctaves}`;
     }
     // Ensure synth.js might be loaded and its globals available
-    if (typeof updateKeyboardRangeHighlightBox === 'function') {
-        updateKeyboardRangeHighlightBox(); // Initial call
+    if (typeof updatePlayableKeyCue === 'function') {
+        updatePlayableKeyCue(); // Initial call of renamed function
     }
 });
 

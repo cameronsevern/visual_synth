@@ -6,6 +6,9 @@ const oscillatorMap = new Map();
 let waveformType = 'sine'; // Default waveform
 let currentKeyboardOctaveOffset = 0; // In semitones (e.g., 0 for no shift, 12 for one octave up, -12 for one octave down)
 
+const LOWEST_MIDI_NOTE_61_KEY = 36; // C2
+const HIGHEST_MIDI_NOTE_61_KEY = 96; // C7
+
 // --- New ADSR and Filter Parameters ---
 let attackTime = 0.01;    // seconds
 let decayTime = 0.1;      // seconds
@@ -34,6 +37,9 @@ analyser.connect(audioContext.destination); // Ensure analyser output is connect
 function setKeyboardOctaveOffset(offsetInOctaves) {
     currentKeyboardOctaveOffset = offsetInOctaves * 12;
     // console.log(`Synth: Keyboard octave offset set to ${offsetInOctaves} (${currentKeyboardOctaveOffset} semitones)`);
+    if (typeof visualizer !== 'undefined' && visualizer.updateMappedRangeHighlight) {
+        visualizer.updateMappedRangeHighlight();
+    }
 }
 
 // Connect analyser to destination to ensure it processes audio
@@ -174,6 +180,24 @@ const keyToMidiNote = {
     'p': 75, // D#5
 };
 
+const baseMidiNotesArray = Object.values(keyToMidiNote);
+const minBaseMidi = Math.min(...baseMidiNotesArray);
+const maxBaseMidi = Math.max(...baseMidiNotesArray);
+
+function getCurrentlyMappedMidiRange() {
+    const startNote = minBaseMidi + currentKeyboardOctaveOffset;
+    const endNote = maxBaseMidi + currentKeyboardOctaveOffset;
+    // Ensure the mapped range still falls within the overall 61-key keyboard limits
+    // and also that startNote isn't greater than endNote if the offset pushes the range out entirely.
+    const effectiveStart = Math.max(LOWEST_MIDI_NOTE_61_KEY, startNote);
+    const effectiveEnd = Math.min(HIGHEST_MIDI_NOTE_61_KEY, endNote);
+
+    return {
+        min: Math.min(effectiveStart, effectiveEnd), // Ensure min <= max
+        max: Math.max(effectiveStart, effectiveEnd)
+    };
+}
+
 function playNote(key) {
     resumeAudioContextIfNeeded();
     const baseMidiNote = keyToMidiNote[key.toLowerCase()]; // Use toLowerCase for robustness against Shift key etc.
@@ -181,10 +205,11 @@ function playNote(key) {
         const finalMidiNote = baseMidiNote + currentKeyboardOctaveOffset;
         // Ensure the note is within the standard 88-key piano range (MIDI 21-108)
         // This prevents errors if octave shift goes too far.
-        if (finalMidiNote >= 21 && finalMidiNote <= 108) {
+        // Use the defined constants for the 61-key range
+        if (finalMidiNote >= LOWEST_MIDI_NOTE_61_KEY && finalMidiNote <= HIGHEST_MIDI_NOTE_61_KEY) {
             playNoteByMidi(finalMidiNote);
         } else {
-            // console.warn(`Keyboard note ${key} (Base MIDI: ${baseMidiNote}) with offset ${currentKeyboardOctaveOffset / 12} octaves results in MIDI ${finalMidiNote}, which is outside the 88-key range (21-108).`);
+            // console.warn(`Keyboard note ${key} (Base MIDI: ${baseMidiNote}) with offset ${currentKeyboardOctaveOffset / 12} octaves results in MIDI ${finalMidiNote}, which is outside the 61-key range (${LOWEST_MIDI_NOTE_61_KEY}-${HIGHEST_MIDI_NOTE_61_KEY}).`);
         }
     }
 }

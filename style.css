@@ -265,9 +265,11 @@ label {
     background-color: #181820;
     border-radius: 10px 10px 0 0;
     box-shadow: 0 -6px 20px rgba(0, 160, 192, 0.15);
-    overflow-x: auto; /* Enable horizontal scrolling */
-    padding-left: 15px; /* Add some padding for scroll ends */
-    padding-right: 15px;
+    display: flex; /* Added for centering piano-roll */
+    justify-content: center; /* Added for centering piano-roll */
+    overflow-x: auto; /* Enable horizontal scrolling if needed */
+    padding-left: 15px; /* Keep padding for scroll ends */
+    padding-right: 15px; /* Keep padding for scroll ends */
 }
 
 .piano-container h2 {
@@ -306,6 +308,29 @@ label {
     background-color: #00A0C0;
 }
 
+.key.active { /* Style for when a key is actively played */
+    background-color: #00D0FF; /* Bright active color */
+    border-color: #00FFFF;
+    box-shadow: 0 0 10px rgba(0, 208, 255, 0.5);
+}
+
+/* Visual cue for the range of keys playable by the computer keyboard */
+.key.playable-key-cue {
+    box-shadow: inset 0 0 0 2px #FF8C00; /* Orange inner border */
+}
+
+/* Ensure active state overrides playable cue's box-shadow but cue remains visible */
+.white-key.active.playable-key-cue {
+    background-color: #00D0FF; /* Active color */
+    box-shadow: inset 0 0 0 2px #FF8C00, 0 0 10px rgba(0, 208, 255, 0.5); /* Combine shadows */
+}
+
+.black-key.active.playable-key-cue {
+    background-color: #00A0C0; /* Slightly different active for black keys if needed, or keep consistent */
+    box-shadow: inset 0 0 0 2px #FF8C00, 0 0 8px rgba(0, 208, 255, 0.4); /* Combine shadows */
+}
+
+
 .white-key {
     background-color: #E0E0E0;
     width: 50px; /* Adjust as needed */
@@ -339,51 +364,37 @@ label {
     border-radius: 0 0 3px 3px;
 }
 
-/* Specific Black Key Positions (based on 50px white key width) */
-/* Octave 0 */
-[id="note-A#-octave-0"] { left: 35px; }
-/* Octave 1 */
-[id="note-C#-octave-1"] { left: 135px; }
-[id="note-D#-octave-1"] { left: 185px; }
-[id="note-F#-octave-1"] { left: 285px; }
-[id="note-G#-octave-1"] { left: 335px; }
-[id="note-A#-octave-1"] { left: 385px; }
+/* Specific Black Key Positions (based on 50px white key width, C2-C7 range) */
 /* Octave 2 */
-[id="note-C#-octave-2"] { left: 485px; }
-[id="note-D#-octave-2"] { left: 535px; }
-[id="note-F#-octave-2"] { left: 635px; }
-[id="note-G#-octave-2"] { left: 685px; }
-[id="note-A#-octave-2"] { left: 735px; }
+[id="note-C#-octave-2"] { left: 35px; }
+[id="note-D#-octave-2"] { left: 85px; }
+[id="note-F#-octave-2"] { left: 185px; }
+[id="note-G#-octave-2"] { left: 235px; }
+[id="note-A#-octave-2"] { left: 285px; }
 /* Octave 3 */
-[id="note-C#-octave-3"] { left: 835px; }
-[id="note-D#-octave-3"] { left: 885px; }
-[id="note-F#-octave-3"] { left: 985px; }
-[id="note-G#-octave-3"] { left: 1035px; }
-[id="note-A#-octave-3"] { left: 1085px; }
+[id="note-C#-octave-3"] { left: 385px; }
+[id="note-D#-octave-3"] { left: 435px; }
+[id="note-F#-octave-3"] { left: 535px; }
+[id="note-G#-octave-3"] { left: 585px; }
+[id="note-A#-octave-3"] { left: 635px; }
 /* Octave 4 */
-[id="note-C#-octave-4"] { left: 1185px; }
-[id="note-D#-octave-4"] { left: 1235px; }
-[id="note-F#-octave-4"] { left: 1335px; }
-[id="note-G#-octave-4"] { left: 1385px; }
-[id="note-A#-octave-4"] { left: 1435px; }
+[id="note-C#-octave-4"] { left: 735px; }
+[id="note-D#-octave-4"] { left: 785px; }
+[id="note-F#-octave-4"] { left: 885px; }
+[id="note-G#-octave-4"] { left: 935px; }
+[id="note-A#-octave-4"] { left: 985px; }
 /* Octave 5 */
-[id="note-C#-octave-5"] { left: 1535px; }
-[id="note-D#-octave-5"] { left: 1585px; }
-[id="note-F#-octave-5"] { left: 1685px; }
-[id="note-G#-octave-5"] { left: 1735px; }
-[id="note-A#-octave-5"] { left: 1785px; }
+[id="note-C#-octave-5"] { left: 1085px; }
+[id="note-D#-octave-5"] { left: 1135px; }
+[id="note-F#-octave-5"] { left: 1235px; }
+[id="note-G#-octave-5"] { left: 1285px; }
+[id="note-A#-octave-5"] { left: 1335px; }
 /* Octave 6 */
-[id="note-C#-octave-6"] { left: 1885px; }
-[id="note-D#-octave-6"] { left: 1935px; }
-[id="note-F#-octave-6"] { left: 2035px; }
-[id="note-G#-octave-6"] { left: 2085px; }
-[id="note-A#-octave-6"] { left: 2135px; }
-/* Octave 7 */
-[id="note-C#-octave-7"] { left: 2235px; }
-[id="note-D#-octave-7"] { left: 2285px; }
-[id="note-F#-octave-7"] { left: 2385px; }
-[id="note-G#-octave-7"] { left: 2435px; }
-[id="note-A#-octave-7"] { left: 2485px; }
+[id="note-C#-octave-6"] { left: 1435px; }
+[id="note-D#-octave-6"] { left: 1485px; }
+[id="note-F#-octave-6"] { left: 1585px; }
+[id="note-G#-octave-6"] { left: 1635px; }
+[id="note-A#-octave-6"] { left: 1685px; }
 
 /* Octave Selector Styles */
 .octave-selector-container {
