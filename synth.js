@@ -259,8 +259,10 @@ if (waveformButtons.length > 0) {
 
             waveformType = button.dataset.waveform;
             // Update any currently playing oscillators
-            oscillatorMap.forEach(osc => {
-                osc.type = waveformType;
+            oscillatorMap.forEach(oscData => {
+                if (oscData && oscData.oscillator) {
+                    oscData.oscillator.type = waveformType;
+                }
             });
             console.log(`Waveform changed to: ${waveformType}`);
         });
